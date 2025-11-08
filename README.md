@@ -1,10 +1,10 @@
 # Automaton Designer
 
-A React + Vite app for designing and simulating finite state automata (FSA).
+A React + Vite app for designing and simulating state automata.
 
 ## Features
 
-- Interactive visual FSA designer with canvas-based drawing
+- Interactive visual Automaton designer with canvas-based drawing
 - Add/edit/delete states and transitions
 - Import/Export automata as JSON
 - Accepting states and start state configuration
