@@ -1,9 +1,9 @@
 # Automaton Designer
 
-A lightweight React + Vite app for designing and simulating state automata.
-
 <div align="center">
-  <img src="https://niccodorn.github.io/automaton-designer/" alt="Automaton Designer Preview" width="600"/>
+A lightweight React + Vite app for designing and simulating state automata.
+**Live Demo:**
+[**NiccoDorn.github.io/automaton-designer**](https://NiccoDorn.github.io/automaton-designer/)
 </div>
 
 ## Features
