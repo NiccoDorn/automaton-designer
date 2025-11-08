@@ -23,39 +23,76 @@ export function drawSelfLoop(ctx, node, label) {
     ctx.fillText(label, loopCenterX, loopCenterY - loopRadius - 10);
 }
 
-export function drawEdge(ctx, fromNode, toNode, label) {
+export function drawEdge(ctx, fromNode, toNode, label, edges) {
     const dx = toNode.x - fromNode.x;
     const dy = toNode.y - fromNode.y;
     const angle = Math.atan2(dy, dx);
-    
+
     const fromX = fromNode.x + NODE_RADIUS * Math.cos(angle);
     const fromY = fromNode.y + NODE_RADIUS * Math.sin(angle);
     const toX = toNode.x - NODE_RADIUS * Math.cos(angle);
     const toY = toNode.y - NODE_RADIUS * Math.sin(angle);
 
-    ctx.beginPath();
-    ctx.moveTo(fromX, fromY);
-    ctx.lineTo(toX, toY);
-    ctx.stroke();
+    // Gegenkante existiert: q_i <=> q_j?
+    const hasReverseEdge = edges.some(e => e.from === toNode.id && e.to === fromNode.id);
 
     ctx.beginPath();
-    ctx.moveTo(toX, toY);
-    ctx.lineTo(toX - 10 * Math.cos(angle - Math.PI / 6), toY - 10 * Math.sin(angle - Math.PI / 6));
-    ctx.lineTo(toX - 10 * Math.cos(angle + Math.PI / 6), toY - 10 * Math.sin(angle + Math.PI / 6));
-    ctx.closePath();
-    ctx.fill();
 
-    const midX = (fromX + toX) / 2;
-    const midY = (fromY + toY) / 2;
-    const labelAngle = angle + Math.PI / 2;
-    const labelX = midX + 10 * Math.cos(labelAngle);
-    const labelY = midY + 10 * Math.sin(labelAngle);
+    if (hasReverseEdge && fromNode.id !== toNode.id) {
+        // leicht gekrümmte Linie statt gerade
+        const curveOffset = 50;
+        const midX = (fromX + toX) / 2;
+        const midY = (fromY + toY) / 2;
+        const curveAngle = angle + Math.PI / 2;
 
-    ctx.fillStyle = '#f8fafc';
-    ctx.fillRect(labelX - ctx.measureText(label).width/2 - 5, labelY - 10, ctx.measureText(label).width + 10, 20);
-    ctx.fillStyle = '#1f2937';
-    ctx.fillText(label, labelX, labelY);
+        const controlX = midX + curveOffset * Math.cos(curveAngle);
+        const controlY = midY + curveOffset * Math.sin(curveAngle);
+
+        ctx.moveTo(fromX, fromY);
+        ctx.quadraticCurveTo(controlX, controlY, toX, toY);
+        ctx.stroke();
+
+        const arrowAngle = Math.atan2(toY - controlY, toX - controlX);
+        ctx.beginPath();
+        ctx.moveTo(toX, toY);
+        ctx.lineTo(toX - 10 * Math.cos(arrowAngle - Math.PI / 6), toY - 10 * Math.sin(arrowAngle - Math.PI / 6));
+        ctx.lineTo(toX - 10 * Math.cos(arrowAngle + Math.PI / 6), toY - 10 * Math.sin(arrowAngle + Math.PI / 6));
+        ctx.closePath();
+        ctx.fill();
+        
+        // label auf kante
+        const labelPosX = midX + (curveOffset - 20) * Math.cos(curveAngle);
+        const labelPosY = midY + (curveOffset - 20) * Math.sin(curveAngle);
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(labelPosX - ctx.measureText(label).width/2 - 5, labelPosY - 10, ctx.measureText(label).width + 10, 20);
+        ctx.fillStyle = '#1f2937';
+        ctx.fillText(label, labelPosX, labelPosY);
     }
+    else {
+        ctx.moveTo(fromX, fromY);
+        ctx.lineTo(toX, toY);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(toX, toY);
+        ctx.lineTo(toX - 10 * Math.cos(angle - Math.PI / 6), toY - 10 * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(toX - 10 * Math.cos(angle + Math.PI / 6), toY - 10 * Math.sin(angle + Math.PI / 6));
+        ctx.closePath();
+        ctx.fill();
+
+        const midX = (fromX + toX) / 2;
+        const midY = (fromY + toY) / 2;
+        const labelAngle = angle + Math.PI / 2;
+        const labelX = midX + 10 * Math.cos(labelAngle);
+        const labelY = midY + 10 * Math.sin(labelAngle);
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(labelX - ctx.measureText(label).width/2 - 5, labelY - 10, ctx.measureText(label).width + 10, 20);
+        ctx.fillStyle = '#1f2937';
+        ctx.fillText(label, labelX, labelY);
+    }
+}
+
 
 export function drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode }) {
     if (node.isStart) {

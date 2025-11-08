@@ -1,0 +1,126 @@
+{
+  "nodes": [
+    {
+      "id": 0,
+      "x": 226,
+      "y": 83.19999694824219,
+      "label": "0",
+      "isAccepting": false,
+      "isStart": true
+    },
+    {
+      "id": 1,
+      "x": 334,
+      "y": 185.1999969482422,
+      "label": "12",
+      "isAccepting": false,
+      "isStart": false
+    },
+    {
+      "id": 2,
+      "x": 581,
+      "y": 86.19999694824219,
+      "label": "47",
+      "isAccepting": false,
+      "isStart": false
+    },
+    {
+      "id": 3,
+      "x": 441,
+      "y": 249.1999969482422,
+      "label": "3",
+      "isAccepting": true,
+      "isStart": false
+    },
+    {
+      "id": 4,
+      "x": 224,
+      "y": 346.1999969482422,
+      "label": "5",
+      "isAccepting": true,
+      "isStart": false
+    },
+    {
+      "id": 5,
+      "x": 578,
+      "y": 350.1999969482422,
+      "label": "6",
+      "isAccepting": false,
+      "isStart": false
+    }
+  ],
+  "edges": [
+    {
+      "from": 0,
+      "to": 1,
+      "label": "a",
+      "id": 0
+    },
+    {
+      "from": 0,
+      "to": 4,
+      "label": "b",
+      "id": 1
+    },
+    {
+      "from": 1,
+      "to": 1,
+      "label": "a",
+      "id": 2
+    },
+    {
+      "from": 1,
+      "to": 3,
+      "label": "b",
+      "id": 3
+    },
+    {
+      "from": 2,
+      "to": 1,
+      "label": "a",
+      "id": 4
+    },
+    {
+      "from": 2,
+      "to": 0,
+      "label": "b",
+      "id": 5
+    },
+    {
+      "from": 3,
+      "to": 2,
+      "label": "a",
+      "id": 6
+    },
+    {
+      "from": 3,
+      "to": 3,
+      "label": "b",
+      "id": 7
+    },
+    {
+      "from": 4,
+      "to": 3,
+      "label": "a",
+      "id": 8
+    },
+    {
+      "from": 4,
+      "to": 5,
+      "label": "b",
+      "id": 9
+    },
+    {
+      "from": 5,
+      "to": 4,
+      "label": "a",
+      "id": 10
+    },
+    {
+      "from": 5,
+      "to": 2,
+      "label": "b",
+      "id": 11
+    }
+  ]
+}
