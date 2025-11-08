@@ -33,3 +33,7 @@ dist-ssr
 # environment
 .environment
 .env
+
+# custom
+
+typescript-migration.md
