@@ -2,8 +2,9 @@
 
 <div align="center">
 A lightweight React + Vite app for designing and simulating state automata.
-**Live Demo:**
+
 [**NiccoDorn.github.io/automaton-designer**](https://NiccoDorn.github.io/automaton-designer/)
+
 </div>
 
 ## Features
