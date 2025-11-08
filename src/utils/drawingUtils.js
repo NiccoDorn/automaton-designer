@@ -33,7 +33,7 @@ export function drawEdge(ctx, fromNode, toNode, label, edges) {
     const toX = toNode.x - NODE_RADIUS * Math.cos(angle);
     const toY = toNode.y - NODE_RADIUS * Math.sin(angle);
 
-    // Gegenkante existiert: q_i <=> q_j?
+    // Gegenkante existiert: q_i <=> q_j? wichtige Änderung
     const hasReverseEdge = edges.some(e => e.from === toNode.id && e.to === fromNode.id);
 
     ctx.beginPath();
@@ -59,7 +59,7 @@ export function drawEdge(ctx, fromNode, toNode, label, edges) {
         ctx.lineTo(toX - 10 * Math.cos(arrowAngle + Math.PI / 6), toY - 10 * Math.sin(arrowAngle + Math.PI / 6));
         ctx.closePath();
         ctx.fill();
-        
+
         // label auf kante
         const labelPosX = midX + (curveOffset - 20) * Math.cos(curveAngle);
         const labelPosY = midY + (curveOffset - 20) * Math.sin(curveAngle);
