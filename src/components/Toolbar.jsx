@@ -11,7 +11,7 @@ export function Toolbar({ mode, onModeChange, onExport, onImport }) {
 
     return (
         <div className="bg-white border-b border-gray-200 p-4 flex items-center gap-4 flex-wrap shadow-md">
-        <h1 className="text-xl font-extrabold text-blue-600 mr-4">Auomaton Designer</h1>
+        <h1 className="text-xl font-extrabold text-blue-600 mr-4">Automaton Designer</h1>
 
         <div className="flex gap-2">
             {modes.map(({ key, icon: IconComponent, label }) => (
