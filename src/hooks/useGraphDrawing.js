@@ -39,7 +39,7 @@ export function useGraphDrawing(canvasRef, nodes, edges, selectedNode, hoveredNo
             if (edge.from === edge.to) {
                 drawSelfLoop(ctx, fromNode, edge.label);
             } else {
-                drawEdge(ctx, fromNode, toNode, edge.label, edges);
+                drawEdge(ctx, fromNode, toNode, edge.label, edges, edge);
             }
         });
 

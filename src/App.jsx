@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Toolbar } from './components/Toolbar';
 import { GraphCanvas } from './components/GraphCanvas';
 import { PropertiesPanel } from './components/PropertiesPanel';
@@ -16,9 +16,19 @@ export default function App() {
   const [edgeStart, setEdgeStart] = useState(null);
   const [draggingNode, setDraggingNode] = useState(null);
   const [hoveredNode, setHoveredNode] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const canvasRef = useRef(null);
   const canvasContainerRef = useRef(null);
+
+  useEffect(() => {
+        if (errorMessage) {
+            const timer = setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000); // 5 sekunden display
+            return () => clearTimeout(timer);
+        }
+    }, [errorMessage, setErrorMessage]);
 
   const addNode = (x, y) => {
     const newNode = createNode(nodes, x, y);
@@ -121,22 +131,68 @@ export default function App() {
     exportGraph(nodes, edges);
   };
 
+  const validateAutomatonData = (data) => {
+      const labels = data.nodes.map(node => node.label);
+      const uniqueLabels = new Set(labels);
+
+      if (labels.length !== uniqueLabels.size) {
+          const seen = new Set();
+          const duplicates = labels.filter(label => {
+              if (seen.has(label)) return true;
+              seen.add(label);
+              return false;
+          });
+          const duplicateList = [...new Set(duplicates)].join(', ');
+          return {
+              isValid: false,
+              message: `Invalid Automaton File: Found duplicate state names (${duplicateList}). Each state must have a unique label.`
+          };
+      }
+
+      if (data.nodes.length === 0) {
+          return {
+              isValid: false,
+              message: "Invalid Automaton File: The file contains no states."
+          };
+      }
+      
+      const startNodes = data.nodes.filter(node => node.isStart);
+      if (startNodes.length === 0) {
+          return {
+              isValid: false,
+              message: "Invalid Automaton File: The automaton must define at least one start state."
+          };
+      }
+      
+      return { isValid: true, message: null };
+  };
+
   const handleImport = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      importGraphFromFile(
-        file,
-        (data) => {
-          setNodes(data.nodes);
-          setEdges(data.edges);
-          setSelectedNode(null);
-        },
-        (error) => {
-          console.error("Error importing graph:", error);
-        }
-      );
-      e.target.value = null;
-    }
+      setErrorMessage(null);
+      
+      const file = e.target.files[0];
+      if (file) {
+          importGraphFromFile(
+              file,
+              (data) => {
+                  const validationResult = validateAutomatonData(data);
+                  
+                  if (!validationResult.isValid) {
+                      setErrorMessage(validationResult.message);
+                      return;
+                  }
+
+                  setNodes(data.nodes);
+                  setEdges(data.edges);
+                  setSelectedNode(null);
+              },
+              (error) => {
+                  console.error("Error importing graph:", error); // meh, lass ich mal drin für debugging
+                  setErrorMessage(`Import Error: Failed to read or parse the graph file. Check the file format.`);
+              }
+          );
+          e.target.value = null;
+      }
   };
 
   const drawGraph = useGraphDrawing(canvasRef, nodes, edges, selectedNode, hoveredNode, mode, edgeStart);
@@ -144,6 +200,21 @@ export default function App() {
 
   return (
     <div className="w-full min-h-screen flex flex-col font-sans bg-gray-50">
+        {errorMessage && (
+            <div
+                className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 sticky top-0 z-50"
+                role="alert"
+            >
+                <p className="font-bold">Validation Error</p>
+                <p>{errorMessage}</p>
+                <button
+                    onClick={() => setErrorMessage(null)}
+                    className="absolute top-1 right-2 text-red-500 hover:text-red-700"
+                >
+                    &times;
+                </button>
+            </div>
+        )}
       <Toolbar
         mode={mode}
         onModeChange={handleModeChange}
