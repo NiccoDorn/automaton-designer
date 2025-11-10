@@ -3,7 +3,6 @@ import { NODE_RADIUS, ACCEPTING_RADIUS } from '../constants';
 function getEdgeCurveIndex(fromNodeId, toNodeId, currentEdgeId, edges) {
     const parallelEdges = edges.filter(e => e.from === fromNodeId && e.to === toNodeId);
     parallelEdges.sort((a, b) => a.id - b.id);
-
     const index = parallelEdges.findIndex(e => e.id === currentEdgeId);
     return {
         index: index,
@@ -11,7 +10,7 @@ function getEdgeCurveIndex(fromNodeId, toNodeId, currentEdgeId, edges) {
     };
 }
 
-export function drawSelfLoop(ctx, node, label) {
+export function drawSelfLoop(ctx, node, label, theme) {
     const loopRadius = 20;
     const offset = ACCEPTING_RADIUS + 5;
     const loopCenterX = node.x;
@@ -31,10 +30,11 @@ export function drawSelfLoop(ctx, node, label) {
     ctx.closePath();
     ctx.fill();
 
+    ctx.fillStyle = theme.edgeLabel;
     ctx.fillText(label, loopCenterX, loopCenterY - loopRadius - 10);
 }
 
-export function drawEdge(ctx, fromNode, toNode, label, edges, currentEdge) {
+export function drawEdge(ctx, fromNode, toNode, label, edges, currentEdge, theme) {
     const dx = toNode.x - fromNode.x;
     const dy = toNode.y - fromNode.y;
     const angle = Math.atan2(dy, dx);
@@ -92,10 +92,9 @@ export function drawEdge(ctx, fromNode, toNode, label, edges, currentEdge) {
         const shiftedLabelX = labelMidpointX + labelShift * Math.cos(perpendicularAngle);
         const shiftedLabelY = labelMidpointY + labelShift * Math.sin(perpendicularAngle);
         
-        ctx.fillStyle = '#1f2937';
+        ctx.fillStyle = theme.edgeLabel;
         ctx.fillText(label, shiftedLabelX, shiftedLabelY);
-    }
-    else {
+    } else {
         ctx.moveTo(fromX, fromY);
         ctx.lineTo(toX, toY);
         ctx.stroke();
@@ -114,17 +113,16 @@ export function drawEdge(ctx, fromNode, toNode, label, edges, currentEdge) {
         const labelX = midX + labelShift * Math.cos(labelAngle);
         const labelY = midY + labelShift * Math.sin(labelAngle);
 
-        ctx.fillStyle = '#1f2937';
+        ctx.fillStyle = theme.edgeLabel;
         ctx.fillText(label, labelX, labelY);
     }
 }
 
-
-export function drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode }) {
+export function drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode }, theme) {
     if (node.isStart) {
-        ctx.strokeStyle = '#374151';
+        ctx.strokeStyle = theme.edge;
         ctx.lineWidth = 2;
-        ctx.fillStyle = '#374151';
+        ctx.fillStyle = theme.edge;
         const startX = node.x - ACCEPTING_RADIUS - 20;
         const endX = node.x - ACCEPTING_RADIUS;
         ctx.beginPath();
@@ -140,22 +138,22 @@ export function drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode }) 
     }
 
     if (node.isAccepting) {
-        ctx.strokeStyle = isSelected ? '#3b82f6' : '#64748b';
+        ctx.strokeStyle = isSelected ? theme.nodeSelected : theme.nodeStroke;
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(node.x, node.y, ACCEPTING_RADIUS, 0, Math.PI * 2);
         ctx.stroke();
     }
 
-    ctx.fillStyle = isEdgeStartNode ? '#fcd34d' : (isHovered ? '#e5e7eb' : '#f9fafb');
-    ctx.strokeStyle = isSelected ? '#3b82f6' : '#64748b';
+    ctx.fillStyle = isEdgeStartNode ? '#fcd34d' : (isHovered ? theme.nodeHover : theme.node);
+    ctx.strokeStyle = isSelected ? theme.nodeSelected : theme.nodeStroke;
     ctx.lineWidth = isSelected ? 4 : 2;
     ctx.beginPath();
     ctx.arc(node.x, node.y, NODE_RADIUS, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = '#1f2937';
+    ctx.fillStyle = theme.text;
     ctx.font = 'bold 16px Inter, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';

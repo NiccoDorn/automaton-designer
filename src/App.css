@@ -1,42 +1,85 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  height: 100vh;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app-container {
+  height: 100vh;
+  overflow: hidden;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+button {
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+button:hover:not(:disabled) {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+label.cursor-pointer {
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+label.cursor-pointer:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+
+input[type="text"],
+input[type="number"] {
+  cursor: text;
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+}
+
+input[type="file"] {
+  cursor: pointer;
+}
+
+
+canvas {
+  display: block;
+}
+
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+button,
+label.cursor-pointer {
+  transition: opacity 0.2s ease, transform 0.1s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+@keyframes pulse-glow-subtle {
+  0%, 100% {
+    filter: drop-shadow(0 0 0px var(--glow-color));
+    opacity: 1;
   }
-  to {
-    transform: rotate(360deg);
+  50% {
+    filter: drop-shadow(0 0 6px var(--glow-color))
+            drop-shadow(0 0 12px var(--glow-color));
+    opacity: 1;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+.icon-glow-share2 {
+  animation: pulse-glow-subtle 2.5s ease-in-out infinite;
 }

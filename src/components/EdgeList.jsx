@@ -1,14 +1,32 @@
 import { Trash2 } from 'lucide-react';
 
-export function EdgeList({ edges, nodes, onUpdateLabel, onDelete }) {
+export function EdgeList({ edges, nodes, onUpdateLabel, onDelete, theme }) {
     if (edges.length === 0) return null;
 
     return (
-        <div className="mt-6 border-t pt-4">
-        <h4 className="font-semibold mb-3 text-gray-700">Connected Transitions</h4>
+        <div
+        className="mt-6 border-t pt-4"
+        style={{ borderColor: theme.border }}
+        >
+        <h4
+            className="font-semibold mb-3"
+            style={{ color: theme.text }}
+        >
+            Connected Transitions
+        </h4>
         {edges.map(edge => (
-            <div key={edge.id} className="p-3 border border-gray-200 rounded-xl mb-3 bg-white shadow-sm">
-            <div className="text-xs text-gray-500 mb-1">
+            <div
+            key={edge.id}
+            className="p-3 border rounded-xl mb-3 shadow-sm"
+            style={{
+                backgroundColor: theme.node,
+                borderColor: theme.border
+            }}
+            >
+            <div
+                className="text-xs mb-1"
+                style={{ color: theme.nodeStroke }}
+            >
                 {nodes.find(n => n.id === edge.from)?.label} → {nodes.find(n => n.id === edge.to)?.label}
             </div>
             <div className="flex gap-2 items-center">
@@ -17,7 +35,12 @@ export function EdgeList({ edges, nodes, onUpdateLabel, onDelete }) {
                 placeholder="Label (e.g., a, b, 0, 1, ε)"
                 value={edge.label}
                 onChange={(e) => onUpdateLabel(edge.id, e.target.value)}
-                className="flex-1 px-2 py-1 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500"
+                className="flex-1 px-2 py-1 border rounded-lg text-sm"
+                style={{
+                    backgroundColor: theme.canvas,
+                    borderColor: theme.border,
+                    color: theme.text
+                }}
                 aria-label={`Edge label for transition ${edge.from} to ${edge.to}`}
                 />
                 <button

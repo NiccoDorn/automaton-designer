@@ -11,14 +11,27 @@ export function PropertiesPanel({
     onSetStart,
     onDeleteNode,
     onUpdateEdgeLabel,
-    onDeleteEdge
+    onDeleteEdge,
+    theme
     }) {
     const selectedNodeData = nodes.find(n => n.id === selectedNode);
     const selectedEdges = edges.filter(e => e.from === selectedNode || e.to === selectedNode);
 
     return (
-        <div className="w-80 bg-white border-l border-gray-200 p-6 overflow-y-auto shadow-lg">
-        <h3 className="font-bold text-xl text-gray-800 mb-6 border-b pb-2">Edit Properties</h3>
+        <div
+        className="w-80 border-l p-6 overflow-y-auto shadow-lg"
+        style={{
+            backgroundColor: theme.panel,
+            borderColor: theme.border,
+            color: theme.text
+        }}
+        >
+        <h3
+            className="font-bold text-xl mb-6 border-b pb-2"
+            style={{ borderColor: theme.border }}
+        >
+            Edit Properties
+        </h3>
 
         {selectedNodeData ? (
             <>
@@ -28,21 +41,26 @@ export function PropertiesPanel({
                 onToggleAccepting={() => onToggleAccepting(selectedNode)}
                 onSetStart={() => onSetStart(selectedNode)}
                 onDelete={() => onDeleteNode(selectedNode)}
+                theme={theme}
             />
             <EdgeList
                 edges={selectedEdges}
                 nodes={nodes}
                 onUpdateLabel={onUpdateEdgeLabel}
                 onDelete={onDeleteEdge}
+                theme={theme}
             />
             </>
         ) : (
-            <p className="text-gray-500 text-sm italic">
+            <p
+            className="text-sm italic"
+            style={{ color: theme.nodeStroke }}
+            >
             Click on a state in the canvas to view and edit its properties, or start by using the tools in the toolbar!
             </p>
         )}
 
-        <UsageInstructions />
+        <UsageInstructions theme={theme} />
         </div>
     );
 }

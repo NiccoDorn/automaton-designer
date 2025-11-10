@@ -1,75 +1,81 @@
 # TODOs for this app
 
-| Task                                              | Priority | Effort |
-| ------------------------------------------------- | -------- | ------ |
-| Optimize layout for smaller screens (iPads only)  | P2       | M      |
-| Ensure scalable canvas and adaptive side panels   | P1       | M      |
-| Add keyboard event listeners for accessibility    | P2       | S      |
-| Implement keyboard shortcuts (add/delete/run)     | P2       | M      |
-| Implement light/dark mode toggle (persist theme)  | P2       | S      |
-| Display clear error messages for invalid automata | P1       | S      |
-| Use toast notifications/modals for feedback       | P2       | S      |
+| Task                                              | Priority | Effort | Done |
+| ------------------------------------------------- | -------- | ------ | ---- |
+| Optimize layout for smaller screens (iPads only)  | P2       | M      | No   |
+| Ensure scalable canvas and adaptive side panels   | P1       | M      | Yes  |
+| Add keyboard event listeners for accessibility    | P2       | S      | Yes  |
+| Implement keyboard shortcuts (add/delete/run)     | P2       | M      | Yes  |
+| Implement light/dark mode toggle (persist theme)  | P2       | S      | Yes  |
+| Display clear error messages for invalid automata | P1       | S      | Yes  |
+| Use toast notifications/modals for feedback       | P2       | S      | No   |
 
 ## Core Features
 
-| Task                                               | Priority | Effort |
-| -------------------------------------------------- | -------- | ------ |
-| **NFA → DFA conversion**                           | P1       | M      |
-| **DFA minimization (Hopcroft’s algorithm)**        | P1       | M      |
-| Table-Filling algorithm                            | P3       | M      |
-| Brzozowski’s algorithm (reversal-based)            | P3       | L      |
-| **Regular Expression → NFA conversion**            | P1       | M      |
-| Regular Expression → DFA conversion                | P3       | M      |
-| DFA → Regular Expression conversion                | P3       | L      |
-| NFA → Regular Expression conversion                | P3       | L      |
-| Detect unreachable/dead states                     | P2       | S      |
-| Check completeness of transitions (DFA validation) | P2       | S      |
-| Save/load automata (local storage, JSON)           | P1       | M      |
-| Export/import automata (file, JSON format)         | P2       | S      |
-| Export visualizations (SVG/PNG)                    | P3       | M      |
+| Task                                               | Priority | Effort | Done |
+| -------------------------------------------------- | -------- | ------ | ---- |
+| **NFA → DFA conversion**                           | P1       | M      | No   |
+| **DFA minimization (Hopcroft's algorithm)**        | P1       | M      | No   |
+| Table-Filling algorithm                            | P3       | M      | No   |
+| Brzozowski's algorithm (reversal-based)            | P3       | L      | No   |
+| **Regular Expression → NFA conversion**            | P1       | M      | No   |
+| Regular Expression → DFA conversion                | P3       | M      | No   |
+| DFA → Regular Expression conversion                | P3       | L      | No   |
+| NFA → Regular Expression conversion                | P3       | L      | No   |
+| Detect unreachable/dead states                     | P2       | S      | No   |
+| Check completeness of transitions (DFA validation) | P2       | S      | No   |
+| Save/load automata (local storage, JSON)           | P1       | M      | Yes  |
+| Export/import automata (file, JSON format)         | P2       | S      | Yes  |
+| Export visualizations (SVG/PNG)                    | P3       | M      | No   |
 
 ## QoL Improvements
 
-| Task                                      | Priority | Effort |
-| ----------------------------------------- | -------- | ------ |
-| Undo/Redo functionality (bounded history) | P1       | M      |
-| Zoom in/out & pan (mouse + touchpad)      | P1       | M      |
-| Grid snapping for precise state placement | P3       | S      |
-| Multi-select states and transitions       | P2       | M      |
-| Copy/paste/delete multiple elements       | P2       | M      |
-| Context menu for quick actions            | P3       | S      |
-| Tooltips and short hints for UI buttons   | P2       | S      |
+| Task                                      | Priority | Effort | Done |
+| ----------------------------------------- | -------- | ------ | ---- |
+| Undo/Redo functionality (bounded history) | P1       | M      | Yes  |
+| Zoom in/out & pan (mouse + touchpad)      | P1       | M      | Yes  |
+| Grid snapping for precise state placement | P3       | S      | No   |
+| Multi-select states and transitions       | P2       | M      | No   |
+| Copy/paste/delete multiple elements       | P2       | M      | No   |
+| Context menu for quick actions            | P3       | S      | No   |
+| Tooltips and short hints for UI buttons   | P2       | S      | Yes  |
+| Clear canvas functionality                | P2       | S      | Yes  |
+| Multi-add states in grid layout           | P2       | S      | Yes  |
+| Merge select and move modes               | P2       | S      | Yes  |
+| Smart add mode (node/edge fallback)       | P2       | M      | Yes  |
+| Default edge label configuration          | P2       | S      | Yes  |
 
 ## Visualization & Simulation
 
-| Task                                                                                 | Priority | Effort |
-| ------------------------------------------------------------------------------------ | -------- | ------ |
-| Interactive automata graph (react-flow/d3-lite)                                      | P1       | M      |
-| Visualize automata operations (union, intersection, complement, concatenation, star) | P2       | L      |
-| Step-by-step algorithm visualization (Hopcroft, NFA→DFA)                             | P2       | L      |
-| Step-by-step input simulation                                                        | P1       | M      |
-| Highlight active states/transitions during simulation                                | P1       | S      |
-| Optimize rendering for large automata (memoization, lazy updates)                    | P2       | M      |
+| Task                                                                                 | Priority | Effort | Done |
+| ------------------------------------------------------------------------------------ | -------- | ------ | ---- |
+| Interactive automata graph (react-flow/d3-lite)                                      | P1       | M      | Yes  |
+| Visualize automata operations (union, intersection, complement, concatenation, star) | P2       | L      | No   |
+| Step-by-step algorithm visualization (Hopcroft, NFA→DFA)                             | P2       | L      | No   |
+| Step-by-step input simulation                                                        | P1       | M      | No   |
+| Highlight active states/transitions during simulation                                | P1       | S      | No   |
+| Optimize rendering for large automata (memoization, lazy updates)                    | P2       | M      | No   |
+| Theme support (Light/Dark/Tech)                                                      | P2       | M      | Yes  |
 
 ## Testing & Documentation
 
-| Task                                                 | Priority | Effort |
-| ---------------------------------------------------- | -------- | ------ |
-| Unit tests for automata algorithms (Jest + RTL)      | P1       | M      |
-| Snapshot tests for visualization components          | P2       | S      |
-| Edge case tests (empty automata, unreachable states) | P2       | S      |
-| Inline JSDoc/TSDoc for algorithms/components         | P2       | S      |
-| In-app help/tooltips explaining algorithms           | P3       | S      |
-| Markdown “About” / “Help” section for GitHub Pages   | P3       | S      |
+| Task                                                 | Priority | Effort | Done |
+| ---------------------------------------------------- | -------- | ------ | ---- |
+| Unit tests for automata algorithms (Jest + RTL)      | P1       | M      | No   |
+| Snapshot tests for visualization components          | P2       | S      | No   |
+| Edge case tests (empty automata, unreachable states) | P2       | S      | No   |
+| Inline JSDoc/TSDoc for algorithms/components         | P2       | S      | No   |
+| In-app help/tooltips explaining algorithms           | P3       | S      | No   |
+| Markdown "About" / "Help" section for GitHub Pages   | P3       | S      | No   |
 
 ## Tech / Build
 
-| Task                                       | Priority | Effort |
-| ------------------------------------------ | -------- | ------ |
-| Lightweight setup (React + Vite + Zustand) | P1       | M      |
-| Tree-shaking, code splitting               | P1       | S      |
-| Lazy-load algorithm modules                | P2       | S      |
-| GitHub Pages CI/CD setup                   | P1       | S      |
+| Task                                       | Priority | Effort | Done |
+| ------------------------------------------ | -------- | ------ | ---- |
+| Lightweight setup (React + Vite + Zustand) | P1       | M      | Yes  |
+| Tree-shaking, code splitting               | P1       | S      | Yes  |
+| Lazy-load algorithm modules                | P2       | S      | No   |
+| GitHub Pages CI/CD setup                   | P1       | S      | Yes  |
 
 
 ## Reference List
