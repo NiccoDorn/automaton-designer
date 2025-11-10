@@ -10,11 +10,12 @@ A lightweight React + Vite app for designing and simulating state automata.
 ## Features
 
 - Interactive visual Automaton designer with canvas-based drawing
-- Add/edit/delete states and transitions
+- (Bulk) add/delete & edit states and transitions
 - Import/Export automata as JSON
 - Accepting states and start state configuration
-- Multiple interaction modes (Select, Add Node, Add Edge, Move)
+- Multiple interaction modes (Select, {Add Node, Add Edge}, Move, Pan, Scroll)
 - Responsive design with Tailwind CSS
+- Theme support (Light/Dark/Tech)
 
 ## Prerequisites
 
@@ -86,10 +87,16 @@ Auto-fix linting issues:
 npx eslint . --fix
 ```
 
-### Project Structure
+### Project Structure (Development Relevant Files)
 
 ```
 automaton-designer/
+├── automaton_data/
+│   ├── automaton1.json
+│   ├── automaton2.json
+│   ├── automaton3.json
+│   └── automaton4.json
+├── public/
 ├── src/
 │   ├── components/
 │   │   ├── Toolbar.jsx
@@ -99,8 +106,11 @@ automaton-designer/
 │   │   ├── EdgeList.jsx
 │   │   └── UsageInstructions.jsx
 │   ├── hooks/
+│   │   ├── useCanvasPan.js
 │   │   ├── useCanvasResize.js
-│   │   └── useGraphDrawing.js
+│   │   ├── useGraphDrawing.js
+│   │   ├── useHistory.js
+│   │   └── useTheme.js
 │   ├── utils/
 │   │   ├── canvasUtils.js
 │   │   ├── drawingUtils.js
@@ -109,11 +119,16 @@ automaton-designer/
 │   │   └── index.js
 │   ├── App.jsx
 │   ├── main.jsx
+│   ├── App.css
 │   └── index.css
-├── public/
+├── eslint.config.js
+├── index.html
+├── LICENSE
 ├── package.json
-├── vite.config.js
-└── eslint.config.js
+├── package-lock.json
+├── README.md
+├── TODO.md
+└── vite.config.js
 ```
 
 ## Building for Production
