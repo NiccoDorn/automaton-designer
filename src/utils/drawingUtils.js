@@ -41,16 +41,10 @@ export function drawEdge(ctx, fromNode, toNode, label, edges, currentEdge, theme
 
     const f = fromNode.id;
     const t = toNode.id;
-
     const forwardEdges = edges.filter(e => e.from === f && e.to === t);
     const backwardEdges = edges.filter(e => e.from === t && e.to === f);
-
     const forwardIndex = forwardEdges.findIndex(e => e.id === currentEdge.id);
-    const backwardIndex = backwardEdges.findIndex(e => e.id === currentEdge.id);
-
     const isForward = forwardIndex !== -1;
-    const hasBackwardEdges = backwardEdges.length > 0;
-
     let curveSign = 0;
     let curveStrength = 0;
 
@@ -59,10 +53,8 @@ export function drawEdge(ctx, fromNode, toNode, label, edges, currentEdge, theme
         curveStrength = 0;
     } else {
         curveSign = isForward ? 1 : -1;
-
         const sameDirEdges = isForward ? forwardEdges : backwardEdges;
         const indexInDir = sameDirEdges.findIndex(e => e.id === currentEdge.id);
-        
         const baseCurv = 30;
         const increment = 35;
         curveStrength = baseCurv + indexInDir * increment;

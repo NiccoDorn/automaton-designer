@@ -176,7 +176,7 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [deleteSelectedNodes, mode, handleUndo, handleRedo, offset]);
+  }, [deleteSelectedNodes, handleUndo, handleRedo, panByOffset, offset, mode, edges, selectedNode]);
 
   const addNode = (x, y) => {
     const basePos = { x: x - offset.x, y: y - offset.y };
@@ -460,12 +460,10 @@ export default function App() {
   };
 
   const handleClearCanvas = () => {
-    if (window.confirm('Are you sure you want to clear the entire canvas? This cannot be undone.')) {
-      saveState([], []);
-      setSelectedNode(null);
-      setSelectedNodes(new Set());
-      setEdgeStart(null);
-    }
+    saveState([], []);
+    setSelectedNode(null);
+    setSelectedNodes(new Set());
+    setEdgeStart(null);
   };
 
   const handleMultiAdd = (count) => {

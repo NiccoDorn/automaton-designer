@@ -10,7 +10,6 @@ export function GraphCanvas({
     onMouseMove,
     onMouseUp,
     theme,
-    onEdgeLabelClick
     }) {
     const cursorClass = mode === 'add' ? 'cursor-crosshair' : 'cursor-default';
 

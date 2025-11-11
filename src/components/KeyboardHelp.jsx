@@ -44,9 +44,9 @@ export function KeyboardHelp({ theme }) {
             className="px-4 pb-3 pt-2 border-t"
             style={{ borderColor: theme.border }}
             >
-            {shortcuts.map((shortcut, index) => (
+            {shortcuts.map((shortcut) => (
                 <div
-                key={index}
+                key={shortcut.key}
                 className="flex items-start gap-3 py-2 text-sm"
                 >
                 <kbd

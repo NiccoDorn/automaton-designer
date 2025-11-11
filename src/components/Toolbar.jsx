@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { MousePointer, Plus, Download, Upload, Undo, Redo, Palette, Trash2, SquarePlus, Share2 } from 'lucide-react';
 
 export function Toolbar({
