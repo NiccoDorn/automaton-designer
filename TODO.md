@@ -8,9 +8,9 @@
 | Implement keyboard shortcuts (add/delete/run)     | P2       | M      | Yes  |
 | Implement light/dark mode toggle (persist theme)  | P2       | S      | Yes  |
 | Display clear error messages for invalid automata | P1       | S      | Yes  |
-| Use toast notifications/modals for feedback       | P2       | S      | No   |
+| Use toast notifications/modals for feedback       | P2       | S      | Yes  |
 
-## Core Features
+## Core Features & Algorithms
 
 | Task                                               | Priority | Effort | Done |
 | -------------------------------------------------- | -------- | ------ | ---- |
@@ -22,11 +22,18 @@
 | Regular Expression → DFA conversion                | P3       | M      | No   |
 | DFA → Regular Expression conversion                | P3       | L      | No   |
 | NFA → Regular Expression conversion                | P3       | L      | No   |
-| Detect unreachable/dead states                     | P2       | S      | No   |
+| Construct Powerset Automata from given NFA         | P2       | M      | No   |
+| Automata operations: Union, Intersection, Cmplt    | P2       | L      | No   |
+| Automata operations: Concatenation, Kleene Star    | P2       | L      | No   |
+| Check equivalence of two DFAs                      | P2       | M      | No   |
+| Check emptiness of language accepted by automaton  | P2       | S      | No   |
+| Check finiteness of language accepted by automaton | P2       | M      | No   |
+| Detect unreachable/dead states                     | P2       | S      | No   | Red circle if no edges, vanishes once edges exist
 | Check completeness of transitions (DFA validation) | P2       | S      | No   |
 | Save/load automata (local storage, JSON)           | P1       | M      | Yes  |
 | Export/import automata (file, JSON format)         | P2       | S      | Yes  |
-| Export visualizations (SVG/PNG)                    | P3       | M      | No   |
+| Export visualizations (SVG/PNG)                    | P3       | M      | No   | Use Keyboard Shortcut "p" for print => opens dialog to select png/svg/pdf
+| Export automata definitions (Regex, JSON)          | P2       | S      | Yes  |
 
 ## QoL Improvements
 
@@ -34,9 +41,8 @@
 | ----------------------------------------- | -------- | ------ | ---- |
 | Undo/Redo functionality (bounded history) | P1       | M      | Yes  |
 | Zoom in/out & pan (mouse + touchpad)      | P1       | M      | Yes  |
-| Grid snapping for precise state placement | P3       | S      | No   |
-| Multi-select states and transitions       | P2       | M      | No   |
-| Copy/paste/delete multiple elements       | P2       | M      | No   |
+| Grid snapping for precise state placement | P3       | S      | Yes  |
+| Multi-select states and transitions       | P2       | M      | Yes  | Only in "i" shortcut mode for now
 | Context menu for quick actions            | P3       | S      | No   |
 | Tooltips and short hints for UI buttons   | P2       | S      | Yes  |
 | Clear canvas functionality                | P2       | S      | Yes  |
@@ -61,9 +67,10 @@
 
 | Task                                                 | Priority | Effort | Done |
 | ---------------------------------------------------- | -------- | ------ | ---- |
-| Unit tests for automata algorithms (Jest + RTL)      | P1       | M      | No   |
+| Unit tests for automata algorithms (Jest + RTL)      | P1       | M      | No   | Right now only basic UI tests by me + file validation
+| Integration tests for core user flows (Cypress)      | P1       | M      | No   |
 | Snapshot tests for visualization components          | P2       | S      | No   |
-| Edge case tests (empty automata, unreachable states) | P2       | S      | No   |
+| Edge case tests (empty automata, unreachable states) | P2       | S      | No   | Right now only enforced by code logic
 | Inline JSDoc/TSDoc for algorithms/components         | P2       | S      | No   |
 | In-app help/tooltips explaining algorithms           | P3       | S      | No   |
 | Markdown "About" / "Help" section for GitHub Pages   | P3       | S      | No   |
