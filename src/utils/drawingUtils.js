@@ -1,15 +1,5 @@
 import { NODE_RADIUS, ACCEPTING_RADIUS } from '../constants';
 
-function getEdgeCurveIndex(fromNodeId, toNodeId, currentEdgeId, edges) {
-    const parallelEdges = edges.filter(e => e.from === fromNodeId && e.to === toNodeId);
-    parallelEdges.sort((a, b) => a.id - b.id);
-    const index = parallelEdges.findIndex(e => e.id === currentEdgeId);
-    return {
-        index: index,
-        count: parallelEdges.length
-    };
-}
-
 export function drawSelfLoop(ctx, node, label, theme) {
     const loopRadius = 20;
     const offset = ACCEPTING_RADIUS + 5;
@@ -25,8 +15,14 @@ export function drawSelfLoop(ctx, node, label, theme) {
     const arrowHeadY = loopCenterY - loopRadius * Math.sin(arrowAngle);
     ctx.beginPath();
     ctx.moveTo(arrowHeadX, arrowHeadY);
-    ctx.lineTo(arrowHeadX - 7 * Math.cos(arrowAngle - Math.PI / 4), arrowHeadY - 7 * Math.sin(arrowAngle - Math.PI / 4));
-    ctx.lineTo(arrowHeadX - 7 * Math.cos(arrowAngle + Math.PI / 4), arrowHeadY - 7 * Math.sin(arrowAngle + Math.PI / 4));
+    ctx.lineTo(
+        arrowHeadX - 7 * Math.cos(arrowAngle - Math.PI / 4),
+        arrowHeadY - 7 * Math.sin(arrowAngle - Math.PI / 4)
+    );
+    ctx.lineTo(
+        arrowHeadX - 7 * Math.cos(arrowAngle + Math.PI / 4),
+        arrowHeadY - 7 * Math.sin(arrowAngle + Math.PI / 4)
+    );
     ctx.closePath();
     ctx.fill();
 
@@ -42,67 +38,48 @@ export function drawEdge(ctx, fromNode, toNode, label, edges, currentEdge, theme
     const fromY = fromNode.y + NODE_RADIUS * Math.sin(angle);
     const toX = toNode.x - NODE_RADIUS * Math.cos(angle);
     const toY = toNode.y - NODE_RADIUS * Math.sin(angle);
-    
-    const hasReverseEdge = edges.some(e => e.from === toNode.id && e.to === fromNode.id);
-    const { index, count } = getEdgeCurveIndex(fromNode.id, toNode.id, currentEdge.id, edges);
-    
-    const curveIncrement = 35;
-    const baseCurvature = hasReverseEdge ? 10 : 5;
-    const indexMagnitude = index + 1;
-    const finalCurveOffset = baseCurvature + indexMagnitude * curveIncrement;
-    const centerIndex = (count - 1) / 2;
-    const symmetricIndex = index - centerIndex;
-    
-    let curveDirectionSign = 1;
-    
-    if (count > 1 && !hasReverseEdge) {
-        curveDirectionSign = Math.sign(symmetricIndex) || 1;
+
+    const f = fromNode.id;
+    const t = toNode.id;
+
+    const forwardEdges = edges.filter(e => e.from === f && e.to === t);
+    const backwardEdges = edges.filter(e => e.from === t && e.to === f);
+
+    const forwardIndex = forwardEdges.findIndex(e => e.id === currentEdge.id);
+    const backwardIndex = backwardEdges.findIndex(e => e.id === currentEdge.id);
+
+    const isForward = forwardIndex !== -1;
+    const hasBackwardEdges = backwardEdges.length > 0;
+
+    let curveSign = 0;
+    let curveStrength = 0;
+
+    if (forwardEdges.length === 1 && backwardEdges.length === 0) {
+        curveSign = 0;
+        curveStrength = 0;
+    } else {
+        curveSign = isForward ? 1 : -1;
+
+        const sameDirEdges = isForward ? forwardEdges : backwardEdges;
+        const indexInDir = sameDirEdges.findIndex(e => e.id === currentEdge.id);
+        
+        const baseCurv = 30;
+        const increment = 35;
+        curveStrength = baseCurv + indexInDir * increment;
     }
-    
-    const needsCurve = hasReverseEdge || count > 1;
 
     ctx.beginPath();
 
-    if (needsCurve) {
-        const midX = (fromX + toX) / 2;
-        const midY = (fromY + toY) / 2;
-        const curveAngle = angle + Math.PI / 2 * curveDirectionSign;
-        const controlX = midX + finalCurveOffset * Math.cos(curveAngle);
-        const controlY = midY + finalCurveOffset * Math.sin(curveAngle);
-
-        ctx.moveTo(fromX, fromY);
-        ctx.quadraticCurveTo(controlX, controlY, toX, toY);
-        ctx.stroke();
-
-        const arrowAngle = Math.atan2(toY - controlY, toX - controlX);
-        ctx.beginPath();
-        ctx.moveTo(toX, toY);
-        ctx.lineTo(toX - 10 * Math.cos(arrowAngle - Math.PI / 6), toY - 10 * Math.sin(arrowAngle - Math.PI / 6));
-        ctx.lineTo(toX - 10 * Math.cos(arrowAngle + Math.PI / 6), toY - 10 * Math.sin(arrowAngle + Math.PI / 6));
-        ctx.closePath();
-        ctx.fill();
-        
-        const labelMidpointX = 0.25 * fromX + 0.5 * controlX + 0.25 * toX;
-        const labelMidpointY = 0.25 * fromY + 0.5 * controlY + 0.25 * toY;
-        const tangentX = toX - fromX;
-        const tangentY = toY - fromY;
-        const tangentAngle = Math.atan2(tangentY, tangentX);
-        const perpendicularAngle = tangentAngle + Math.PI / 2;
-        const labelShift = 8;
-        const shiftedLabelX = labelMidpointX + labelShift * Math.cos(perpendicularAngle);
-        const shiftedLabelY = labelMidpointY + labelShift * Math.sin(perpendicularAngle);
-        
-        ctx.fillStyle = theme.edgeLabel;
-        ctx.fillText(label, shiftedLabelX, shiftedLabelY);
-    } else {
+    if (curveSign === 0) {
         ctx.moveTo(fromX, fromY);
         ctx.lineTo(toX, toY);
         ctx.stroke();
 
+        const arrowAngle = angle;
         ctx.beginPath();
         ctx.moveTo(toX, toY);
-        ctx.lineTo(toX - 10 * Math.cos(angle - Math.PI / 6), toY - 10 * Math.sin(angle - Math.PI / 6));
-        ctx.lineTo(toX - 10 * Math.cos(angle + Math.PI / 6), toY - 10 * Math.sin(angle + Math.PI / 6));
+        ctx.lineTo(toX - 10 * Math.cos(arrowAngle - Math.PI / 6), toY - 10 * Math.sin(arrowAngle - Math.PI / 6));
+        ctx.lineTo(toX - 10 * Math.cos(arrowAngle + Math.PI / 6), toY - 10 * Math.sin(arrowAngle + Math.PI / 6));
         ctx.closePath();
         ctx.fill();
 
@@ -112,10 +89,41 @@ export function drawEdge(ctx, fromNode, toNode, label, edges, currentEdge, theme
         const labelShift = 8;
         const labelX = midX + labelShift * Math.cos(labelAngle);
         const labelY = midY + labelShift * Math.sin(labelAngle);
-
         ctx.fillStyle = theme.edgeLabel;
         ctx.fillText(label, labelX, labelY);
+        return;
     }
+
+    const midX = (fromX + toX) / 2;
+    const midY = (fromY + toY) / 2;
+    const curveAngle = angle + curveSign * Math.PI / 2;
+    const controlX = midX + curveStrength * Math.cos(curveAngle);
+    const controlY = midY + curveStrength * Math.sin(curveAngle);
+
+    ctx.moveTo(fromX, fromY);
+    ctx.quadraticCurveTo(controlX, controlY, toX, toY);
+    ctx.stroke();
+
+    const arrowAngle = Math.atan2(toY - controlY, toX - controlX);
+    ctx.beginPath();
+    ctx.moveTo(toX, toY);
+    ctx.lineTo(toX - 10 * Math.cos(arrowAngle - Math.PI / 6), toY - 10 * Math.sin(arrowAngle - Math.PI / 6));
+    ctx.lineTo(toX - 10 * Math.cos(arrowAngle + Math.PI / 6), toY - 10 * Math.sin(arrowAngle + Math.PI / 6));
+    ctx.closePath();
+    ctx.fill();
+
+    const labelMidpointX = 0.25 * fromX + 0.5 * controlX + 0.25 * toX;
+    const labelMidpointY = 0.25 * fromY + 0.5 * controlY + 0.25 * toY;
+    const tangentX = toX - fromX;
+    const tangentY = toY - fromY;
+    const tangentAngle = Math.atan2(tangentY, tangentX);
+    const perpendicularAngle = tangentAngle + Math.PI / 2;
+    const labelShift = 8;
+    const shiftedLabelX = labelMidpointX + labelShift * Math.cos(perpendicularAngle);
+    const shiftedLabelY = labelMidpointY + labelShift * Math.sin(perpendicularAngle);
+    
+    ctx.fillStyle = theme.edgeLabel;
+    ctx.fillText(label, shiftedLabelX, shiftedLabelY);
 }
 
 export function drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode }, theme) {

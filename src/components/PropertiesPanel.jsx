@@ -1,6 +1,5 @@
 import { NodeEditor } from './NodeEditor';
 import { EdgeList } from './EdgeList';
-import { UsageInstructions } from './UsageInstructions';
 
 export function PropertiesPanel({
     selectedNode,
@@ -15,7 +14,7 @@ export function PropertiesPanel({
     theme
     }) {
     const selectedNodeData = nodes.find(n => n.id === selectedNode);
-    const selectedEdges = edges.filter(e => e.from === selectedNode || e.to === selectedNode);
+    const selectedEdges = edges.filter(e => e.from === selectedNode);
 
     return (
         <div
@@ -59,8 +58,6 @@ export function PropertiesPanel({
             Click on a state in the canvas to view and edit its properties, or start by using the tools in the toolbar!
             </p>
         )}
-
-        <UsageInstructions theme={theme} />
         </div>
     );
 }

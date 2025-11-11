@@ -1,7 +1,19 @@
 import { useCallback, useEffect } from 'react';
 import { drawNode, drawEdge, drawSelfLoop } from '../utils/drawingUtils';
 
-export function useGraphDrawing(canvasRef, nodes, edges, selectedNode, hoveredNode, mode, edgeStart, theme, offset) {
+export function useGraphDrawing(
+    canvasRef,
+    nodes,
+    edges,
+    selectedNode,
+    hoveredNode,
+    mode,
+    edgeStart,
+    theme,
+    offset,
+    selectedNodes = new Set(),
+    selectionBox = null
+    ) {
     const drawGraph = useCallback(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -10,6 +22,21 @@ export function useGraphDrawing(canvasRef, nodes, edges, selectedNode, hoveredNo
 
         ctx.save();
         ctx.translate(offset.x, offset.y);
+
+        if (selectionBox && selectionBox.start && selectionBox.end) {
+        const minX = Math.min(selectionBox.start.x, selectionBox.end.x);
+        const maxX = Math.max(selectionBox.start.x, selectionBox.end.x);
+        const minY = Math.min(selectionBox.start.y, selectionBox.end.y);
+        const maxY = Math.max(selectionBox.start.y, selectionBox.end.y);
+
+        ctx.strokeStyle = theme.nodeSelected;
+        ctx.fillStyle = theme.nodeSelected + '20';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.fillRect(minX, minY, maxX - minX, maxY - minY);
+        ctx.strokeRect(minX, minY, maxX - minX, maxY - minY);
+        ctx.setLineDash([]);
+        }
 
         if (mode === 'add' && edgeStart !== null) {
         const fromNode = nodes.find(n => n.id === edgeStart);
@@ -47,14 +74,14 @@ export function useGraphDrawing(canvasRef, nodes, edges, selectedNode, hoveredNo
         });
 
         nodes.forEach(node => {
-        const isSelected = selectedNode === node.id;
+        const isSelected = selectedNode === node.id || selectedNodes.has(node.id);
         const isHovered = hoveredNode === node.id;
         const isEdgeStartNode = edgeStart === node.id;
         drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode }, theme);
         });
 
         ctx.restore();
-    }, [canvasRef, nodes, edges, selectedNode, hoveredNode, mode, edgeStart, theme, offset]);
+    }, [canvasRef, nodes, edges, selectedNode, hoveredNode, mode, edgeStart, theme, offset, selectedNodes, selectionBox]);
 
     useEffect(() => {
         drawGraph();

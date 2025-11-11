@@ -5,10 +5,12 @@ export function GraphCanvas({
     edgeStart,
     nodes,
     onCanvasClick,
+    onCanvasRightClick,
     onMouseDown,
     onMouseMove,
     onMouseUp,
-    theme
+    theme,
+    onEdgeLabelClick
     }) {
     const cursorClass = mode === 'add' ? 'cursor-crosshair' : 'cursor-default';
 
@@ -22,10 +24,10 @@ export function GraphCanvas({
             ref={canvasRef}
             className={`w-full h-full ${cursorClass}`}
             onClick={onCanvasClick}
+            onContextMenu={onCanvasRightClick}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}
             onMouseUp={onMouseUp}
-            onContextMenu={(e) => e.preventDefault()}
         />
         {edgeStart !== null && (
             <div
@@ -37,7 +39,7 @@ export function GraphCanvas({
                 border: '1px solid'
             }}
             >
-            Connecting from: {nodes.find(n => n.id === edgeStart)?.label}. Click target node or empty space.
+            Connecting from: {nodes.find(n => n.id === edgeStart)?.label}. Click target state or empty space (creates new state).
             </div>
         )}
         <div
@@ -48,7 +50,7 @@ export function GraphCanvas({
             opacity: 0.7
             }}
         >
-            {mode === 'select' ? 'Click to select • Drag to move • Ctrl+Click to pan' : 'Click empty: add node • Click node: add edge'}
+            {mode === 'select' ? 'Click to select • Drag to move • Drag empty space for multi-select' : 'Click empty: add node • Click node: add edge'}
         </div>
         </div>
     );

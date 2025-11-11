@@ -47,3 +47,37 @@ export function importGraphFromFile(file, onSuccess, onError) {
     };
     reader.readAsText(file);
 }
+
+export function checkNodeOverlap(newNode, existingNodes, minDistance = 60) {
+    for (const node of existingNodes) {
+        const dx = newNode.x - node.x;
+        const dy = newNode.y - node.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < minDistance) {
+        return true;
+        }
+    }
+    return false;
+}
+
+export function findNonOverlappingPosition(baseX, baseY, existingNodes, maxAttempts = 50) {
+    let x = baseX;
+    let y = baseY;
+    let attempt = 0;
+    const spiralStep = 70;
+    
+    while (attempt < maxAttempts) {
+        const testNode = { x, y };
+        if (!checkNodeOverlap(testNode, existingNodes)) {
+        return { x, y };
+        }
+        
+        const angle = (attempt * 0.5) * Math.PI;
+        const radius = spiralStep * (1 + attempt * 0.3);
+        x = baseX + radius * Math.cos(angle);
+        y = baseY + radius * Math.sin(angle);
+        attempt++;
+    }
+    
+    return { x: baseX, y: baseY };
+}

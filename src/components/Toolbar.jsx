@@ -1,6 +1,4 @@
-/* eslint-disable no-unused-vars */
 import { MousePointer, Plus, Download, Upload, Undo, Redo, Palette, Trash2, SquarePlus, Share2 } from 'lucide-react';
-import { useState } from 'react';
 
 export function Toolbar({
     mode,
@@ -14,34 +12,28 @@ export function Toolbar({
     theme,
     themeName,
     onThemeToggle,
-    defaultEdgeLabel,
-    onDefaultEdgeLabelChange,
     onClearCanvas,
     onMultiAdd
     }) {
-    const [showMultiAdd, setShowMultiAdd] = useState(false);
-    const [nodeCount, setNodeCount] = useState(5);
-
     const modes = [
         { key: 'select', icon: MousePointer, label: 'Select & Move' },
         { key: 'add', icon: Plus, label: 'Add' },
     ];
 
-    const handleMultiAdd = () => {
-        const count = Math.min(Math.max(1, parseInt(nodeCount) || 5), 30);
-        onMultiAdd(count);
-        setShowMultiAdd(false);
-    };
-
     return (
         <div
-        className="border-b p-4 flex items-center gap-4 flex-wrap shadow-md">
+        className="border-b p-4 flex items-center gap-4 flex-wrap shadow-md"
+        style={{
+            backgroundColor: theme.toolbar,
+            borderColor: theme.border
+        }}
+        >
         <Share2
             size={24}
             className='icon-glow-share2'
             style={{
-                '--glow-color': theme.nodeSelected || 'rgba(229, 242, 246, 1)',
-                color: theme.nodeSelected || 'rgb(173, 216, 230)',
+            '--glow-color': theme.nodeSelected || 'rgba(229, 242, 246, 1)',
+            color: theme.nodeSelected || 'rgb(173, 216, 230)',
             }}
         />
         <h1
@@ -66,29 +58,6 @@ export function Toolbar({
             </button>
             ))}
         </div>
-
-        {mode === 'add' && (
-            <div className="flex items-center gap-2">
-            <label
-                className="text-sm font-medium"
-                style={{ color: theme.text }}
-            >
-                Transition Label:
-            </label>
-            <input
-                type="text"
-                value={defaultEdgeLabel}
-                onChange={(e) => onDefaultEdgeLabelChange(e.target.value)}
-                placeholder="ε"
-                className="px-3 py-2 rounded-lg border text-sm w-24"
-                style={{
-                backgroundColor: theme.node,
-                borderColor: theme.border,
-                color: theme.text
-                }}
-            />
-            </div>
-        )}
 
         <div className="flex gap-2">
             <button
@@ -123,44 +92,16 @@ export function Toolbar({
 
         <div className="flex gap-2">
             <button
-            onClick={() => setShowMultiAdd(!showMultiAdd)}
+            onClick={onMultiAdd}
             className="px-4 py-2 rounded-lg font-medium shadow-sm transition duration-150 ease-in-out flex items-center gap-2"
             style={{
                 backgroundColor: theme.node,
                 color: theme.text
             }}
-            title="Add multiple states at once"
+            title="Add multiple states at once (M)"
             >
             <SquarePlus size={18} /> Multi-Add
             </button>
-
-            {showMultiAdd && (
-            <div className="flex items-center gap-2">
-                <input
-                type="number"
-                min="1"
-                max="30"
-                value={nodeCount}
-                onChange={(e) => setNodeCount(e.target.value)}
-                className="px-3 py-2 rounded-lg border text-sm w-20"
-                style={{
-                    backgroundColor: theme.node,
-                    borderColor: theme.border,
-                    color: theme.text
-                }}
-                />
-                <button
-                onClick={handleMultiAdd}
-                className="px-3 py-2 rounded-lg font-medium shadow-sm transition duration-150 ease-in-out"
-                style={{
-                    backgroundColor: theme.nodeSelected,
-                    color: '#ffffff'
-                }}
-                >
-                Create
-                </button>
-            </div>
-            )}
 
             <button
             onClick={onClearCanvas}
@@ -168,7 +109,7 @@ export function Toolbar({
             style={{ backgroundColor: '#ef4444' }}
             title="Clear entire canvas"
             >
-            <Trash2 size={18} /> Clear all
+            <Trash2 size={18} /> Clear
             </button>
         </div>
 

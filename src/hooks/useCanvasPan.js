@@ -26,11 +26,19 @@ export function useCanvasPan() {
         setIsPanning(false);
     }, []);
 
+    const panByOffset = useCallback((dx, dy) => {
+        setOffset(prev => ({
+            x: prev.x + dx,
+            y: prev.y + dy
+        }));
+    }, []);
+
     return {
         offset,
         isPanning,
         startPan,
         updatePan,
-        endPan
+        endPan,
+        panByOffset
     };
 }

@@ -2,29 +2,45 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Toolbar } from './components/Toolbar';
 import { GraphCanvas } from './components/GraphCanvas';
 import { PropertiesPanel } from './components/PropertiesPanel';
+import { EdgeLabelDialog } from './components/EdgeLabelDialog';
+import { KeyboardHelp } from './components/KeyboardHelp';
+import { MultiAddDialog } from './components/MultiAddDialog';
 import { useGraphDrawing } from './hooks/useGraphDrawing';
 import { useCanvasResize } from './hooks/useCanvasResize';
 import { useHistory } from './hooks/useHistory';
 import { useTheme } from './hooks/useTheme';
 import { useCanvasPan } from './hooks/useCanvasPan';
 import { getCanvasCoords, findNode } from './utils/canvasUtils';
-import { createNode, createEdge, exportGraph, importGraphFromFile } from './utils/graphOperations';
-import { INITIAL_NODES, INITIAL_EDGES } from './constants';
+import { createNode, createEdge, exportGraph, importGraphFromFile, findNonOverlappingPosition } from './utils/graphOperations';
+import { INITIAL_NODES, INITIAL_EDGES, NODE_RADIUS } from './constants';
 
 export default function App() {
   const [mode, setMode] = useState('select');
+  const [selectedNodes, setSelectedNodes] = useState(new Set());
   const [selectedNode, setSelectedNode] = useState(null);
   const [edgeStart, setEdgeStart] = useState(null);
   const [draggingNode, setDraggingNode] = useState(null);
   const [hoveredNode, setHoveredNode] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [defaultEdgeLabel, setDefaultEdgeLabel] = useState('ε');
+  const [isSelecting, setIsSelecting] = useState(false);
+  const [selectionStart, setSelectionStart] = useState(null);
+  const [selectionEnd, setSelectionEnd] = useState(null);
+  const [isDraggingSelection, setIsDraggingSelection] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
+  const [edgeLabelDialog, setEdgeLabelDialog] = useState({
+    isOpen: false,
+    edgeId: null,
+    initialLabel: '',
+    position: { x: 0, y: 0 },
+    pendingEdge: null
+  });
+
+  const [multiAddDialog, setMultiAddDialog] = useState(false);
   const canvasRef = useRef(null);
   const canvasContainerRef = useRef(null);
-
   const { currentTheme, cycleTheme, themeName } = useTheme();
-  const { offset, isPanning, startPan, updatePan, endPan } = useCanvasPan();
+  const { offset, isPanning, startPan, updatePan, endPan, panByOffset } = useCanvasPan();
 
   const {
     currentState,
@@ -33,7 +49,7 @@ export default function App() {
     redo,
     canUndo,
     canRedo
-  } = useHistory({ nodes: INITIAL_NODES, edges: INITIAL_EDGES }, 20);
+  } = useHistory({ nodes: INITIAL_NODES, edges: INITIAL_EDGES }, 100);
 
   const nodes = currentState.nodes;
   const edges = currentState.edges;
@@ -52,24 +68,41 @@ export default function App() {
       saveState(newNodes, newEdges);
       setSelectedNode(null);
     },
-    [nodes, edges, saveState, setSelectedNode]
+    [nodes, edges, saveState]
   );
+
+  const deleteSelectedNodes = useCallback(() => {
+    if (selectedNodes.size === 0 && selectedNode) {
+      deleteNode(selectedNode);
+    } else if (selectedNodes.size > 0) {
+      const nodesToDelete = Array.from(selectedNodes);
+      const newNodes = nodes.filter(n => !nodesToDelete.includes(n.id));
+      const newEdges = edges.filter(e =>
+        !nodesToDelete.includes(e.from) && !nodesToDelete.includes(e.to)
+      );
+      saveState(newNodes, newEdges);
+      setSelectedNodes(new Set());
+      setSelectedNode(null);
+    }
+  }, [selectedNodes, selectedNode, nodes, edges, saveState, deleteNode]);
 
   const handleUndo = useCallback(() => {
     const prevState = undo();
     if (prevState) {
       setSelectedNode(null);
+      setSelectedNodes(new Set());
       setEdgeStart(null);
     }
-  }, [undo, setSelectedNode, setEdgeStart]);
+  }, [undo]);
 
   const handleRedo = useCallback(() => {
     const nextState = redo();
     if (nextState) {
       setSelectedNode(null);
+      setSelectedNodes(new Set());
       setEdgeStart(null);
     }
-  }, [redo, setSelectedNode, setEdgeStart]);
+  }, [redo]);
 
   useEffect(() => {
     if (errorMessage) {
@@ -82,10 +115,53 @@ export default function App() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if ((e.key === 'Backspace' || e.key === 'Delete') && selectedNode !== null) {
-        e.preventDefault();
-        deleteNode(selectedNode);
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
       }
+
+      if (e.key === 'd' || e.key === 'D') {
+        e.preventDefault();
+        deleteSelectedNodes();
+      }
+
+      if (e.key === 'a' || e.key === 'A') {
+        e.preventDefault();
+        setMode(mode === 'add' ? 'select' : 'add');
+        setEdgeStart(null);
+      }
+
+      if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        setMultiAddDialog(true);
+      }
+
+      if (e.key === 'i' || e.key === 'I') {
+        e.preventDefault();
+        if (selectedNode) {
+            const connected = new Set([selectedNode]);
+            edges.forEach(e => {
+                if (e.from === selectedNode) connected.add(e.to);
+                if (e.to === selectedNode) connected.add(e.from);
+            });
+            setSelectedNodes(connected);
+        }
+      }
+
+      if (e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        setMode('select');
+        setEdgeStart(null);
+      }
+
+      if (e.key.startsWith('Arrow')) {
+        e.preventDefault();
+        const panSpeed = 10;
+        if (e.key === 'ArrowLeft') panByOffset(panSpeed, 0);
+        if (e.key === 'ArrowRight') panByOffset(-panSpeed, 0);
+        if (e.key === 'ArrowUp') panByOffset(0, panSpeed);
+        if (e.key === 'ArrowDown') panByOffset(0, -panSpeed);
+      }
+
       if (e.ctrlKey || e.metaKey) {
         if (e.key === 'z' && !e.shiftKey) {
           e.preventDefault();
@@ -100,16 +176,28 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [deleteNode, handleRedo, handleUndo, selectedNode, nodes, edges]);
+  }, [deleteSelectedNodes, mode, handleUndo, handleRedo, offset]);
 
   const addNode = (x, y) => {
-    const newNode = createNode(nodes, x - offset.x, y - offset.y);
+    const basePos = { x: x - offset.x, y: y - offset.y };
+    const finalPos = findNonOverlappingPosition(basePos.x, basePos.y, nodes);
+    const newNode = createNode(nodes, finalPos.x, finalPos.y);
     const newNodes = [...nodes, newNode];
     saveState(newNodes, edges);
+    return newNode.id;
   };
 
-  const addEdge = (from, to) => {
-    const newEdge = createEdge(edges, from, to, defaultEdgeLabel);
+  const addEdge = (from, to, label = 'ε') => {
+    if (from === to) {
+      const existingSelfLoop = edges.find(e => e.from === from && e.to === to);
+      if (existingSelfLoop) {
+        const newLabel = existingSelfLoop.label + ', ' + label;
+        updateEdgeLabel(existingSelfLoop.id, newLabel);
+        return;
+      }
+    }
+    
+    const newEdge = createEdge(edges, from, to, label);
     const newEdges = [...edges, newEdge];
     saveState(nodes, newEdges);
   };
@@ -141,14 +229,15 @@ export default function App() {
   };
 
   const updateEdgeLabel = (edgeId, label) => {
+    const finalLabel = label.trim() === '' ? 'ε' : label;
     const newEdges = edges.map(e =>
-      e.id === edgeId ? { ...e, label } : e
+      e.id === edgeId ? { ...e, label: finalLabel } : e
     );
     saveState(nodes, newEdges);
   };
 
   const handleCanvasClick = (e) => {
-    if (isPanning) return;
+    if (isPanning || isSelecting) return;
 
     const coords = getCanvasCoords(canvasRef.current, e);
     const adjustedCoords = { x: coords.x - offset.x, y: coords.y - offset.y };
@@ -156,17 +245,47 @@ export default function App() {
 
     if (mode === 'add') {
       if (!clickedNode) {
-        addNode(coords.x, coords.y);
+        const newNodeId = addNode(coords.x, coords.y);
+        
+        if (edgeStart !== null) {
+          setEdgeLabelDialog({
+            isOpen: true,
+            edgeId: null,
+            initialLabel: 'ε',
+            position: { x: e.clientX, y: e.clientY },
+            pendingEdge: { from: edgeStart, to: newNodeId }
+          });
+          setEdgeStart(null);
+        }
       } else {
         if (edgeStart === null) {
           setEdgeStart(clickedNode.id);
         } else {
-          addEdge(edgeStart, clickedNode.id);
+          setEdgeLabelDialog({
+            isOpen: true,
+            edgeId: null,
+            initialLabel: 'ε',
+            position: { x: e.clientX, y: e.clientY },
+            pendingEdge: { from: edgeStart, to: clickedNode.id }
+          });
           setEdgeStart(null);
         }
       }
     } else if (mode === 'select') {
-      setSelectedNode(clickedNode ? clickedNode.id : null);
+      if (clickedNode) {
+        setSelectedNode(clickedNode.id);
+        setSelectedNodes(new Set());
+      } else {
+        setSelectedNode(null);
+        setSelectedNodes(new Set());
+      }
+    }
+  };
+
+  const handleCanvasRightClick = (e) => {
+    e.preventDefault();
+    if (mode === 'add' && edgeStart !== null) {
+      setEdgeStart(null);
     }
   };
 
@@ -178,11 +297,32 @@ export default function App() {
       return;
     }
 
+    if (e.button === 2) {
+      return;
+    }
+
     const adjustedCoords = { x: coords.x - offset.x, y: coords.y - offset.y };
     const clickedNode = findNode(nodes, adjustedCoords.x, adjustedCoords.y);
 
-    if (mode === 'select' && clickedNode && !isPanning) {
-      setDraggingNode(clickedNode.id);
+    if (mode === 'select') {
+      if (clickedNode) {
+        if (selectedNodes.size > 1) {
+          return;
+        }
+        if (selectedNodes.has(clickedNode.id)) {
+          setIsDraggingSelection(true);
+          setDragOffset({
+            x: adjustedCoords.x - clickedNode.x,
+            y: adjustedCoords.y - clickedNode.y
+          });
+        } else {
+          setDraggingNode(clickedNode.id);
+        }
+      } else if (!isPanning) {
+        setIsSelecting(true);
+        setSelectionStart({ x: adjustedCoords.x, y: adjustedCoords.y });
+        setSelectionEnd({ x: adjustedCoords.x, y: adjustedCoords.y });
+      }
     }
   };
 
@@ -194,6 +334,23 @@ export default function App() {
 
     if (isPanning) {
       updatePan(coords.x, coords.y);
+    } else if (isSelecting && selectionStart) {
+      setSelectionEnd({ x: adjustedCoords.x, y: adjustedCoords.y });
+    } else if (isDraggingSelection && selectedNodes.size > 0) {
+      const dx = adjustedCoords.x - dragOffset.x;
+      const dy = adjustedCoords.y - dragOffset.y;
+      
+      const firstNode = nodes.find(n => selectedNodes.has(n.id));
+      const offsetX = dx - firstNode.x;
+      const offsetY = dy - firstNode.y;
+
+      const newNodes = nodes.map(n =>
+        selectedNodes.has(n.id)
+          ? { ...n, x: n.x + offsetX, y: n.y + offsetY }
+          : n
+      );
+      saveState(newNodes, edges);
+      setDragOffset({ x: dx, y: dy });
     } else if (draggingNode !== null) {
       const newNodes = nodes.map(n =>
         n.id === draggingNode ? { ...n, x: adjustedCoords.x, y: adjustedCoords.y } : n
@@ -203,13 +360,35 @@ export default function App() {
   };
 
   const handleMouseUp = () => {
+    if (isSelecting && selectionStart && selectionEnd) {
+      const minX = Math.min(selectionStart.x, selectionEnd.x);
+      const maxX = Math.max(selectionStart.x, selectionEnd.x);
+      const minY = Math.min(selectionStart.y, selectionEnd.y);
+      const maxY = Math.max(selectionStart.y, selectionEnd.y);
+
+      const selected = new Set();
+      nodes.forEach(node => {
+        if (node.x >= minX && node.x <= maxX && node.y >= minY && node.y <= maxY) {
+          selected.add(node.id);
+        }
+      });
+
+      setSelectedNodes(selected);
+      setSelectedNode(null);
+    }
+
     setDraggingNode(null);
+    setIsSelecting(false);
+    setIsDraggingSelection(false);
+    setSelectionStart(null);
+    setSelectionEnd(null);
     endPan();
   };
 
   const handleModeChange = (newMode) => {
     setMode(newMode);
     setEdgeStart(null);
+    setSelectedNodes(new Set());
   };
 
   const handleExport = () => {
@@ -269,6 +448,7 @@ export default function App() {
 
           saveState(data.nodes, data.edges);
           setSelectedNode(null);
+          setSelectedNodes(new Set());
         },
         (error) => {
           console.error("Error importing graph:", error);
@@ -279,10 +459,13 @@ export default function App() {
     }
   };
 
-    const handleClearCanvas = () => {
+  const handleClearCanvas = () => {
+    if (window.confirm('Are you sure you want to clear the entire canvas? This cannot be undone.')) {
       saveState([], []);
       setSelectedNode(null);
+      setSelectedNodes(new Set());
       setEdgeStart(null);
+    }
   };
 
   const handleMultiAdd = (count) => {
@@ -295,8 +478,8 @@ export default function App() {
     const spacingX = Math.min((canvasWidth - 100) / (cols + 1), 150);
     const spacingY = Math.min((canvasHeight - 100) / (rows + 1), 150);
     
-    const startX = (canvasWidth - (cols - 1) * spacingX) / 4;
-    const startY = (canvasHeight - (rows - 1) * spacingY) / 4;
+    const startX = 100;
+    const startY = 100;
     
     const newNodes = [];
     const baseId = nodes.length > 0 ? Math.max(...nodes.map(n => n.id)) + 1 : 0;
@@ -318,6 +501,27 @@ export default function App() {
     saveState([...nodes, ...newNodes], edges);
   };
 
+  const handleEdgeLabelSave = (label) => {
+    if (edgeLabelDialog.pendingEdge) {
+      addEdge(edgeLabelDialog.pendingEdge.from, edgeLabelDialog.pendingEdge.to, label);
+    } else if (edgeLabelDialog.edgeId !== null) {
+      updateEdgeLabel(edgeLabelDialog.edgeId, label);
+    }
+  };
+
+  const handleEdgeLabelClick = (edgeId, x, y) => {
+    const edge = edges.find(e => e.id === edgeId);
+    if (edge) {
+      setEdgeLabelDialog({
+        isOpen: true,
+        edgeId: edge.id,
+        initialLabel: edge.label,
+        position: { x, y },
+        pendingEdge: null
+      });
+    }
+  };
+
   const drawGraph = useGraphDrawing(
     canvasRef,
     nodes,
@@ -327,8 +531,11 @@ export default function App() {
     mode,
     edgeStart,
     currentTheme,
-    offset
+    offset,
+    selectedNodes,
+    isSelecting ? { start: selectionStart, end: selectionEnd } : null
   );
+  
   useCanvasResize(canvasRef, canvasContainerRef, drawGraph);
 
   return (
@@ -336,25 +543,22 @@ export default function App() {
       className="app-container w-full min-h-screen flex flex-col font-sans"
       style={{ backgroundColor: currentTheme.background }}
     >
-      <div
-        className="w-full min-h-screen flex flex-col font-sans"
-        style={{ backgroundColor: currentTheme.background }}
-      >
       {errorMessage && (
-          <div
-            className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 sticky top-0 z-50"
-            role="alert"
+        <div
+          className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 sticky top-0 z-50"
+          role="alert"
+        >
+          <p className="font-bold">Validation Error</p>
+          <p>{errorMessage}</p>
+          <button
+            onClick={() => setErrorMessage(null)}
+            className="absolute top-1 right-2 text-red-500 hover:text-red-700 text-2xl leading-none"
           >
-            <p className="font-bold">Validation Error</p>
-            <p>{errorMessage}</p>
-            <button
-              onClick={() => setErrorMessage(null)}
-              className="absolute top-1 right-2 text-red-500 hover:text-red-700 text-2xl leading-none"
-            >
-              ×
-            </button>
-          </div>
+            ×
+          </button>
+        </div>
       )}
+      
       <Toolbar
         mode={mode}
         onModeChange={handleModeChange}
@@ -367,11 +571,11 @@ export default function App() {
         theme={currentTheme}
         themeName={themeName}
         onThemeToggle={cycleTheme}
-        defaultEdgeLabel={defaultEdgeLabel}
-        onDefaultEdgeLabelChange={setDefaultEdgeLabel}
         onClearCanvas={handleClearCanvas}
-        onMultiAdd={handleMultiAdd}
+        onMultiAdd={() => setMultiAddDialog(true)}
       />
+
+      <KeyboardHelp theme={currentTheme} />
 
       <div className="flex-1 flex min-h-0">
         <GraphCanvas
@@ -381,10 +585,12 @@ export default function App() {
           edgeStart={edgeStart}
           nodes={nodes}
           onCanvasClick={handleCanvasClick}
+          onCanvasRightClick={handleCanvasRightClick}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           theme={currentTheme}
+          onEdgeLabelClick={handleEdgeLabelClick}
         />
 
         <PropertiesPanel
@@ -400,7 +606,22 @@ export default function App() {
           theme={currentTheme}
         />
       </div>
-    </div>
+
+      <EdgeLabelDialog
+        isOpen={edgeLabelDialog.isOpen}
+        onClose={() => setEdgeLabelDialog({ ...edgeLabelDialog, isOpen: false })}
+        onSave={handleEdgeLabelSave}
+        initialLabel={edgeLabelDialog.initialLabel}
+        theme={currentTheme}
+        position={edgeLabelDialog.position}
+      />
+
+      <MultiAddDialog
+        isOpen={multiAddDialog}
+        onClose={() => setMultiAddDialog(false)}
+        onConfirm={handleMultiAdd}
+        theme={currentTheme}
+      />
     </div>
   );
 }
