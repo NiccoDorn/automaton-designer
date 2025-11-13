@@ -34,7 +34,7 @@ export function useSimulation(nodes, edges) {
             
             timeoutRef.current = setTimeout(() => {
                 resetSimulation();
-            }, 7000);
+            }, 5000);
             return;
         }
 

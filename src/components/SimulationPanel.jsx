@@ -11,7 +11,8 @@ export function SimulationPanel({
         <div
             className="border-t flex items-center justify-between gap-4 px-6 py-3"
             style={{
-                backgroundColor: '#eaf6ff',
+                // Change: Use theme.panel for background color
+                backgroundColor: theme.panel, 
                 borderColor: theme.border,
             }}
         >
@@ -62,8 +63,8 @@ export function SimulationPanel({
                 disabled={!inputWord.trim()}
                 className={`button-laser px-4 py-2 rounded-lg font-bold text-lg shadow-lg transition flex items-center gap-3 ${
                     inputWord.trim()
-                    ? 'bg-green-600 hover:bg-green-700 text-white'
-                    : 'bg-gray-400 text-white cursor-not-allowed opacity-50'
+                        ? 'bg-green-600 hover:bg-green-700 text-white'
+                        : 'bg-gray-400 text-white cursor-not-allowed opacity-50'
                 }`}
                 title="Simulate (Enter)"
             >

@@ -133,7 +133,7 @@
     {
       "from": 7,
       "to": 3,
-      "label": "d",
+      "label": "a",
       "id": 12
     },
     {
@@ -193,13 +193,13 @@
     {
       "from": 3,
       "to": 6,
-      "label": "a",
+      "label": "c",
       "id": 22
     },
     {
       "from": 6,
       "to": 3,
-      "label": "c",
+      "label": "b",
       "id": 23
     },
     {
@@ -211,7 +211,7 @@
     {
       "from": 8,
       "to": 1,
-      "label": "c",
+      "label": "b",
       "id": 25
     },
     {
