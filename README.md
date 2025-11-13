@@ -92,35 +92,47 @@ npx eslint . --fix
 ```
 automaton-designer/
 ├── automaton_data/
-│   ├── automaton1.json
-│   ├── automaton2.json
-│   ├── automaton3.json
-│   └── automaton4.json
+│   ├── automaton1.json
+│   ├── automaton2.json
+│   ├── automaton3.json
+│   └── automaton4.json
+├── dist/
 ├── public/
 ├── src/
-│   ├── components/
-│   │   ├── Toolbar.jsx
-│   │   ├── GraphCanvas.jsx
-│   │   ├── PropertiesPanel.jsx
-│   │   ├── NodeEditor.jsx
-│   │   ├── EdgeList.jsx
-│   │   └── UsageInstructions.jsx
-│   ├── hooks/
-│   │   ├── useCanvasPan.js
-│   │   ├── useCanvasResize.js
-│   │   ├── useGraphDrawing.js
-│   │   ├── useHistory.js
-│   │   └── useTheme.js
-│   ├── utils/
-│   │   ├── canvasUtils.js
-│   │   ├── drawingUtils.js
-│   │   └── graphOperations.js
-│   ├── constants/
-│   │   └── index.js
-│   ├── App.jsx
-│   ├── main.jsx
-│   ├── App.css
-│   └── index.css
+│   ├── assets/
+│   ├── components/
+│   │   ├── EdgeLabelDialog.jsx
+│   │   ├── EdgeList.jsx
+│   │   ├── GraphCanvas.jsx
+│   │   ├── KeyboardHelp.jsx
+│   │   ├── MultiAddDialog.jsx
+│   │   ├── NodeEditor.jsx
+│   │   ├── PropertiesPanel.jsx
+│   │   ├── Toolbar.jsx
+│   │   └── UsageInstructions.jsx
+│   ├── constants/
+│   │   └── index.js
+│   ├── hooks/
+│   │   ├── useAutomatonOperations.js
+│   │   ├── useAutomatonState.js
+│   │   ├── useCanvasInteractions.js
+│   │   ├── useCanvasPan.js
+│   │   ├── useCanvasResize.js
+│   │   ├── useDialogs.js
+│   │   ├── useGraphDrawing.js
+│   │   ├── useHistory.js
+│   │   ├── useKeyboardShortcuts.js
+│   │   └── useTheme.js
+│   ├── utils/
+│   │   ├── canvasUtils.js
+│   │   ├── drawingUtils.js
+│   │   ├── graphOperations.js
+│   │   └── validation.js
+│   ├── App.css
+│   ├── App.jsx
+│   ├── index.css
+│   └── main.jsx
+├── .gitignore
 ├── eslint.config.js
 ├── index.html
 ├── LICENSE
@@ -128,10 +140,36 @@ automaton-designer/
 ├── package-lock.json
 ├── README.md
 ├── TODO.md
+├── typescript-migration.md
 └── vite.config.js
 ```
 
-## Building for Production
+## Building for Production-Like Usage
+
+### Crucial security checks
+
+- First, check for vulnerabilities in your dependencies
+
+```bash
+npm audit # Check for vulnerabilities in packages reported by npm
+```
+
+- Then, fix vulnerabilities, if any are found
+
+```bash
+npm audit fix # Automatically fix vulnerabilities, may not fix all
+npm audit fix --force # Force fix (be careful, may break things, i.e. major version updates ~"SemVer breaking changes")
+```
+
+- Nice to know: you can also use third-party tools like [Snyk](https://snyk.io/) for more comprehensive security analysis or
+install audit-export globally to export audit reports in different formats like html or json
+
+```bash
+npm install -g audit-export
+npm audit --json | audit-export --path ./audit-report.html
+```
+
+- see [here](audit-report.html) for an example report with no vulnerabilities
 
 ### Build the application
 
