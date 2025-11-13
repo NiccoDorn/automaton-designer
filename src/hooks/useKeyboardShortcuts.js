@@ -14,14 +14,11 @@ export function useKeyboardShortcuts({
     edges,
     setSelectedNodes,
     handleUndo,
-    handleRedo
+    handleRedo,
+    panByOffset
 }) {
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-                return;
-            }
-
             if ((e.ctrlKey || e.metaKey) && (e.key === 'x' || e.key === 'X')) {
                 e.preventDefault();
                 if (edgeLabelDialog.isOpen) {
@@ -32,6 +29,10 @@ export function useKeyboardShortcuts({
                     closeMultiAddDialog();
                     return;
                 }
+            }
+
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
             }
 
             if (e.key === 'd' || e.key === 'D') {
@@ -85,6 +86,6 @@ export function useKeyboardShortcuts({
     }, [
         edgeLabelDialog, multiAddDialog, closeEdgeLabelDialog, closeMultiAddDialog,
         deleteSelectedNodes, mode, setMode, setEdgeStart, openMultiAddDialog,
-        selectedNode, edges, setSelectedNodes, handleUndo, handleRedo
+        selectedNode, edges, setSelectedNodes, handleUndo, handleRedo, panByOffset
     ]);
 }
