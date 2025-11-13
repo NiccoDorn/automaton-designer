@@ -11,6 +11,7 @@ export function KeyboardHelp({ theme }) {
         { key: 'M', description: 'Multi-Add states' },
         { key: 'I', description: 'Select connected nodes' },
         { key: '←↑→↓', description: 'Pan canvas' },
+        { key: 'Ctrl+X', description: 'Cancel Dialog Window' },
         { key: 'Ctrl+Z', description: 'Undo' },
         { key: 'Ctrl+Y', description: 'Redo' },
         { key: 'Right Click', description: 'Deselect edge start' },

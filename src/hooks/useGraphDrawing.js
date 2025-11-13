@@ -24,34 +24,34 @@ export function useGraphDrawing(
         ctx.translate(offset.x, offset.y);
 
         if (selectionBox && selectionBox.start && selectionBox.end) {
-        const minX = Math.min(selectionBox.start.x, selectionBox.end.x);
-        const maxX = Math.max(selectionBox.start.x, selectionBox.end.x);
-        const minY = Math.min(selectionBox.start.y, selectionBox.end.y);
-        const maxY = Math.max(selectionBox.start.y, selectionBox.end.y);
+            const minX = Math.min(selectionBox.start.x, selectionBox.end.x);
+            const maxX = Math.max(selectionBox.start.x, selectionBox.end.x);
+            const minY = Math.min(selectionBox.start.y, selectionBox.end.y);
+            const maxY = Math.max(selectionBox.start.y, selectionBox.end.y);
 
-        ctx.strokeStyle = theme.nodeSelected;
-        ctx.fillStyle = theme.nodeSelected + '20';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]);
-        ctx.fillRect(minX, minY, maxX - minX, maxY - minY);
-        ctx.strokeRect(minX, minY, maxX - minX, maxY - minY);
-        ctx.setLineDash([]);
+            ctx.strokeStyle = theme.nodeSelected;
+            ctx.fillStyle = theme.nodeSelected + '20';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.fillRect(minX, minY, maxX - minX, maxY - minY);
+            ctx.strokeRect(minX, minY, maxX - minX, maxY - minY);
+            ctx.setLineDash([]);
         }
 
         if (mode === 'add' && edgeStart !== null) {
-        const fromNode = nodes.find(n => n.id === edgeStart);
-        const toNode = nodes.find(n => n.id === hoveredNode);
+            const fromNode = nodes.find(n => n.id === edgeStart);
+            const toNode = nodes.find(n => n.id === hoveredNode);
 
-        if (fromNode && toNode && toNode.id !== fromNode.id) {
-            ctx.strokeStyle = theme.nodeStroke;
-            ctx.setLineDash([5, 5]);
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(fromNode.x, fromNode.y);
-            ctx.lineTo(toNode.x, toNode.y);
-            ctx.stroke();
-            ctx.setLineDash([]);
-        }
+            if (fromNode && toNode && toNode.id !== fromNode.id) {
+                ctx.strokeStyle = theme.nodeStroke;
+                ctx.setLineDash([5, 5]);
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(fromNode.x, fromNode.y);
+                ctx.lineTo(toNode.x, toNode.y);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
         }
 
         edges.forEach(edge => {
@@ -74,10 +74,10 @@ export function useGraphDrawing(
         });
 
         nodes.forEach(node => {
-        const isSelected = selectedNode === node.id || selectedNodes.has(node.id);
-        const isHovered = hoveredNode === node.id;
-        const isEdgeStartNode = edgeStart === node.id;
-        drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode }, theme);
+            const isSelected = selectedNode === node.id || selectedNodes.has(node.id);
+            const isHovered = hoveredNode === node.id;
+            const isEdgeStartNode = edgeStart === node.id;
+            drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode }, theme);
         });
 
         ctx.restore();

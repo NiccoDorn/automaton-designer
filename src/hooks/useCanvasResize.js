@@ -7,9 +7,9 @@ export function useCanvasResize(canvasRef, containerRef, drawCallback) {
         if (!canvas || !container) return;
         
         const resizeObserver = new ResizeObserver(() => {
-        canvas.width = container.clientWidth;
-        canvas.height = container.clientHeight;
-        drawCallback();
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            drawCallback();
         });
         
         resizeObserver.observe(container);

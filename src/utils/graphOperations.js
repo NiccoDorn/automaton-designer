@@ -35,15 +35,13 @@ export function importGraphFromFile(file, onSuccess, onError) {
     const reader = new FileReader();
     reader.onload = (event) => {
         try {
-        const data = JSON.parse(event.target.result);
-        if (Array.isArray(data.nodes) && Array.isArray(data.edges)) {
-            onSuccess(data);
-        } else {
-            onError(new Error("Invalid graph structure in file."));
-        }
-        } catch (error) {
-        onError(error);
-        }
+            const data = JSON.parse(event.target.result);
+            if (Array.isArray(data.nodes) && Array.isArray(data.edges)) {
+                onSuccess(data);
+            } else {
+                onError(new Error("Invalid graph structure in file."));
+            }
+        } catch (error) { onError(error); }
     };
     reader.readAsText(file);
 }
@@ -53,9 +51,7 @@ export function checkNodeOverlap(newNode, existingNodes, minDistance = 60) {
         const dx = newNode.x - node.x;
         const dy = newNode.y - node.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < minDistance) {
-        return true;
-        }
+        if (distance < minDistance) { return true; }
     }
     return false;
 }
@@ -69,7 +65,7 @@ export function findNonOverlappingPosition(baseX, baseY, existingNodes, maxAttem
     while (attempt < maxAttempts) {
         const testNode = { x, y };
         if (!checkNodeOverlap(testNode, existingNodes)) {
-        return { x, y };
+            return { x, y };
         }
         
         const angle = (attempt * 0.5) * Math.PI;

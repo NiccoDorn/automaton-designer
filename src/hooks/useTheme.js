@@ -50,9 +50,7 @@ const THEMES = {
 
 export function useTheme() {
     const [theme, setTheme] = useState('light');
-
     const currentTheme = THEMES[theme];
-
     const cycleTheme = () => {
         const themeKeys = Object.keys(THEMES);
         const currentIndex = themeKeys.indexOf(theme);

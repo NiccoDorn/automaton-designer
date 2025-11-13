@@ -12,13 +12,13 @@ export function useCanvasPan() {
 
     const updatePan = useCallback((x, y) => {
         if (isPanning) {
-        const dx = x - panStart.x;
-        const dy = y - panStart.y;
-        setOffset(prev => ({
-            x: prev.x + dx,
-            y: prev.y + dy
-        }));
-        setPanStart({ x, y });
+            const dx = x - panStart.x;
+            const dy = y - panStart.y;
+            setOffset(prev => ({
+                x: prev.x + dx,
+                y: prev.y + dy
+            }));
+            setPanStart({ x, y });
         }
     }, [isPanning, panStart]);
 
