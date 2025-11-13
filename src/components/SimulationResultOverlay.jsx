@@ -10,7 +10,7 @@ export function SimulationResultOverlay({ result, isVisible, theme }) {
             setIsGifLoading(true);
             const randomNum = Math.floor(Math.random() * 4) + 1;
             const gifType = result.success ? 'yes' : 'not';
-            setGifPath(`../../automaton-designer/public/${gifType}${randomNum}.gif`);
+            setGifPath(`/automaton-designer/${gifType}${randomNum}.gif`);
         }
     }, [isVisible, result]);
 
