@@ -83,3 +83,51 @@ label.cursor-pointer {
 .icon-glow-share2 {
   animation: pulse-glow-subtle 2.5s ease-in-out infinite;
 }
+
+
+/* Simulation Panel */
+
+.input-blue {
+  border: 1px solid #3b82f6;
+  border-radius: 0.5rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-blue:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+/* Zooom! */
+@keyframes laserSweep {
+  0% {
+    transform: translateX(-150%);
+  }
+  50% {
+    transform: translateX(150%);
+  }
+  100% {
+    transform: translateX(150%);
+  }
+}
+
+.button-laser {
+  position: relative;
+  overflow: hidden;
+}
+
+.button-laser::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  transform: translateX(-150%);
+  animation: laserSweep 2.2s linear infinite;
+  pointer-events: none;
+}

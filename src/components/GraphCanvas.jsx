@@ -49,7 +49,7 @@ export function GraphCanvas({
             opacity: 0.7
             }}
         >
-            {mode === 'select' ? 'Click to select • Drag to move • Drag empty space for multi-select' : 'Click empty: add node • Click node: add edge'}
+            {mode === 'select' ? 'Click to select • Ctrl + Drag to move in canvas' : 'Click empty: add node • Click node: add edge'}
         </div>
         </div>
     );

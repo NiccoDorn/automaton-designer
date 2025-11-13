@@ -373,7 +373,7 @@ export default function App() {
           </button>
         </div>
       )}
-      
+
       <Toolbar
         mode={mode}
         onModeChange={handleModeChange}
@@ -393,50 +393,56 @@ export default function App() {
 
       <KeyboardHelp theme={currentTheme} />
 
-      <div className="flex-1 flex min-h-0">
-        <GraphCanvas
-          canvasRef={canvasRef}
-          containerRef={canvasContainerRef}
-          mode={mode}
-          edgeStart={edgeStart}
-          nodes={nodes}
-          onCanvasClick={isSimulating ? () => {} : handleCanvasClick}
-          onCanvasRightClick={isSimulating ? (e) => e.preventDefault() : handleCanvasRightClick}
-          onMouseDown={isSimulating ? () => {} : handleMouseDown}
-          onMouseMove={isSimulating ? () => {} : handleMouseMove}
-          onMouseUp={isSimulating ? () => {} : handleMouseUp}
-          theme={currentTheme}
-          onEdgeLabelClick={handleEdgeLabelClick}
-        />
+      {/* Updated layout */}
+      <div className="flex-1 flex flex-col min-h-0">
+        <div className="flex flex-1 min-h-0">
+          {/* Canvas + Simulation stacked vertically */}
+          <div className="flex flex-col flex-1 min-h-0">
+            <GraphCanvas
+              canvasRef={canvasRef}
+              containerRef={canvasContainerRef}
+              mode={mode}
+              edgeStart={edgeStart}
+              nodes={nodes}
+              onCanvasClick={isSimulating ? () => {} : handleCanvasClick}
+              onCanvasRightClick={isSimulating ? (e) => e.preventDefault() : handleCanvasRightClick}
+              onMouseDown={isSimulating ? () => {} : handleMouseDown}
+              onMouseMove={isSimulating ? () => {} : handleMouseMove}
+              onMouseUp={isSimulating ? () => {} : handleMouseUp}
+              theme={currentTheme}
+              onEdgeLabelClick={handleEdgeLabelClick}
+            />
 
-        <PropertiesPanel
-          selectedNode={selectedNode}
-          nodes={nodes}
-          edges={edges}
-          onUpdateNodeLabel={updateNodeLabel}
-          onToggleAccepting={toggleAccepting}
-          onSetStart={setStartState}
-          onDeleteNode={(nodeId) => {
-            if (isSimulating) return;
-            deleteNode(nodeId);
-            setSelectedNode(null);
-          }}
-          onUpdateEdgeLabel={updateEdgeLabel}
-          onDeleteEdge={deleteEdge}
-          theme={currentTheme}
-          isSimulating={isSimulating}
-        />
+            <SimulationPanel
+              inputWord={inputWord}
+              setInputWord={setInputWord}
+              onStart={startSimulation}
+              onStop={stopSimulation}
+              isSimulating={isSimulating}
+              processedChars={processedChars}
+              theme={currentTheme}
+            />
+          </div>
+
+          <PropertiesPanel
+            selectedNode={selectedNode}
+            nodes={nodes}
+            edges={edges}
+            onUpdateNodeLabel={updateNodeLabel}
+            onToggleAccepting={toggleAccepting}
+            onSetStart={setStartState}
+            onDeleteNode={(nodeId) => {
+              if (isSimulating) return;
+              deleteNode(nodeId);
+              setSelectedNode(null);
+            }}
+            onUpdateEdgeLabel={updateEdgeLabel}
+            onDeleteEdge={deleteEdge}
+            theme={currentTheme}
+            isSimulating={isSimulating}
+          />
+        </div>
       </div>
-
-      <SimulationPanel
-        inputWord={inputWord}
-        setInputWord={setInputWord}
-        onStart={startSimulation}
-        onStop={stopSimulation}
-        isSimulating={isSimulating}
-        processedChars={processedChars}
-        theme={currentTheme}
-      />
 
       <SimulationResultOverlay
         result={simulationResult}

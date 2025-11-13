@@ -28,43 +28,44 @@ export function useSimulation(nodes, edges) {
             
             setSimulationResult({
                 success,
-                message: success
-                    ? 'Woohoo! Word accepted! You speak my language!'
-                    : 'My language, mothertrucker! Do you speak it???'
+                message: success ? 'Accepted!' : 'Rejected!'
             });
             setShowResultAnimation(true);
             
             timeoutRef.current = setTimeout(() => {
                 resetSimulation();
-            }, 5000);
+            }, 7000);
             return;
         }
 
-        const char = inputWord[charIndex];
-        const possibleEdges = edges.filter(e =>
-            e.from === stateId && (e.label === char || e.label.split(',').map(l => l.trim()).includes(char))
-        );
-
-        if (possibleEdges.length === 0) {
-            setSimulationResult({
-                success: false,
-                message: 'My language, mothertrucker! Do you speak it???'
-            });
-            setShowResultAnimation(true);
-            
-            timeoutRef.current = setTimeout(() => {
-                resetSimulation();
-            }, 5000);
-            return;
-        }
-
-        const nextEdge = possibleEdges[0];
-        setCurrentStateId(nextEdge.to);
-        setProcessedChars(charIndex + 1);
+        setCurrentStateId(stateId);
+        setProcessedChars(charIndex);
 
         timeoutRef.current = setTimeout(() => {
-            simulateStep(nextEdge.to, charIndex + 1);
-        }, 800);
+            const char = inputWord[charIndex];
+            const possibleEdges = edges.filter(e =>
+                e.from === stateId && (e.label === char || e.label.split(',').map(l => l.trim()).includes(char))
+            );
+
+            if (possibleEdges.length === 0) {
+                setSimulationResult({
+                    success: false,
+                    message: 'Rejected!'
+                });
+                setShowResultAnimation(true);
+                
+                timeoutRef.current = setTimeout(() => {
+                    resetSimulation();
+                }, 5000);
+                return;
+            }
+
+            const nextEdge = possibleEdges[0];
+            timeoutRef.current = setTimeout(() => {
+                setProcessedChars(charIndex + 1);
+                simulateStep(nextEdge.to, charIndex + 1);
+            }, 400);
+        }, 600);
     }, [inputWord, nodes, edges, resetSimulation]);
 
     const startSimulation = useCallback(() => {

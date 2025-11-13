@@ -138,15 +138,22 @@ export function drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode, is
     }
 
     if (node.isAccepting) {
-        ctx.strokeStyle = isSelected ? theme.nodeSelected : (isSimulationActive ? '#fbbf24' : theme.nodeStroke);
+        ctx.strokeStyle = isSelected ? theme.nodeSelected : (isSimulationActive ? '#f59e0b' : theme.nodeStroke);
         ctx.lineWidth = isSimulationActive ? 4 : 2;
         ctx.beginPath();
         ctx.arc(node.x, node.y, ACCEPTING_RADIUS, 0, Math.PI * 2);
         ctx.stroke();
     }
 
-    ctx.fillStyle = isSimulationActive ? '#fef3c7' : (isEdgeStartNode ? '#fcd34d' : (isHovered ? theme.nodeHover : theme.node));
-    ctx.strokeStyle = isSelected ? theme.nodeSelected : (isSimulationActive ? '#fbbf24' : theme.nodeStroke);
+    let simColor, simFill;
+    if (isSimulationActive) {
+        const isDarkTheme = theme.canvas.includes('1f') || theme.canvas.includes('0f');
+        simColor = isDarkTheme ? '#fbbf24' : '#f59e0b';
+        simFill = isDarkTheme ? '#fef3c7' : '#fde68a';
+    }
+
+    ctx.fillStyle = isSimulationActive ? simFill : (isEdgeStartNode ? '#fcd34d' : (isHovered ? theme.nodeHover : theme.node));
+    ctx.strokeStyle = isSelected ? theme.nodeSelected : (isSimulationActive ? simColor : theme.nodeStroke);
     ctx.lineWidth = isSelected ? 4 : (isSimulationActive ? 4 : 2);
     ctx.beginPath();
     ctx.arc(node.x, node.y, NODE_RADIUS, 0, Math.PI * 2);
@@ -154,7 +161,7 @@ export function drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode, is
     ctx.stroke();
 
     if (isSimulationActive) {
-        ctx.strokeStyle = '#f59e0b';
+        ctx.strokeStyle = simColor;
         ctx.lineWidth = 2;
         ctx.setLineDash([5, 5]);
         ctx.beginPath();
