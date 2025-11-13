@@ -13,7 +13,8 @@ export function PropertiesPanel({
     onDeleteNode,
     onUpdateEdgeLabel,
     onDeleteEdge,
-    theme
+    theme,
+    isSimulating = false
     }) {
     const [isGreekExpanded, setIsGreekExpanded] = useState(false);
     const selectedNodeData = nodes.find(n => n.id === selectedNode);
@@ -37,7 +38,9 @@ export function PropertiesPanel({
         style={{
             backgroundColor: theme.panel,
             borderColor: theme.border,
-            color: theme.text
+            color: theme.text,
+            opacity: isSimulating ? 0.6 : 1,
+            pointerEvents: isSimulating ? 'none' : 'auto'
         }}
         >
         <h3
@@ -53,6 +56,7 @@ export function PropertiesPanel({
         >
             <button
             onClick={() => setIsGreekExpanded(!isGreekExpanded)}
+            disabled={isSimulating}
             className="w-full px-4 py-3 flex items-center justify-between"
             style={{ color: theme.text }}
             >
@@ -70,6 +74,7 @@ export function PropertiesPanel({
                     <button
                     key={symbol}
                     onClick={() => copyToClipboard(symbol)}
+                    disabled={isSimulating}
                     className="p-2 rounded-lg text-center font-bold text-lg"
                     style={{
                         backgroundColor: theme.canvas,
@@ -101,6 +106,7 @@ export function PropertiesPanel({
                 onSetStart={() => onSetStart(selectedNode)}
                 onDelete={() => onDeleteNode(selectedNode)}
                 theme={theme}
+                isSimulating={isSimulating}
             />
             <EdgeList
                 edges={selectedEdges}
@@ -108,6 +114,7 @@ export function PropertiesPanel({
                 onUpdateLabel={onUpdateEdgeLabel}
                 onDelete={onDeleteEdge}
                 theme={theme}
+                isSimulating={isSimulating}
             />
             </>
         ) : (
@@ -115,7 +122,10 @@ export function PropertiesPanel({
             className="text-sm italic"
             style={{ color: theme.nodeStroke }}
             >
-            Click on a state in the canvas to view and edit its properties, or start by using the tools in the toolbar!
+            {isSimulating
+                ? 'Simulation running... Properties locked. Press ESC to escape the simulation, Neo!'
+                : 'Click on a state in the canvas to view and edit its properties, or start by using the tools in the toolbar!'
+            }
             </p>
         )}
         </div>

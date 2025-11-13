@@ -12,7 +12,8 @@ export function useGraphDrawing(
     theme,
     offset,
     selectedNodes = new Set(),
-    selectionBox = null
+    selectionBox = null,
+    simulationState = null
     ) {
     const drawGraph = useCallback(() => {
         const canvas = canvasRef.current;
@@ -59,8 +60,11 @@ export function useGraphDrawing(
         const toNode = nodes.find(n => n.id === edge.to);
         if (!fromNode || !toNode) return;
 
-        ctx.strokeStyle = theme.edge;
-        ctx.lineWidth = 2;
+        const isActiveSimulation = simulationState?.currentStateId === edge.to
+            || simulationState?.currentStateId === edge.from;
+
+        ctx.strokeStyle = isActiveSimulation ? '#fbbf24' : theme.edge;
+        ctx.lineWidth = isActiveSimulation ? 4 : 2;
         ctx.fillStyle = theme.edgeLabel;
         ctx.font = '14px Inter, sans-serif';
         ctx.textAlign = 'center';
@@ -77,11 +81,18 @@ export function useGraphDrawing(
             const isSelected = selectedNode === node.id || selectedNodes.has(node.id);
             const isHovered = hoveredNode === node.id;
             const isEdgeStartNode = edgeStart === node.id;
-            drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode }, theme);
+            const isSimulationActive = simulationState?.currentStateId === node.id;
+            
+            drawNode(ctx, node, {
+                isSelected,
+                isHovered,
+                isEdgeStartNode,
+                isSimulationActive
+            }, theme);
         });
 
         ctx.restore();
-    }, [canvasRef, nodes, edges, selectedNode, hoveredNode, mode, edgeStart, theme, offset, selectedNodes, selectionBox]);
+    }, [canvasRef, nodes, edges, selectedNode, hoveredNode, mode, edgeStart, theme, offset, selectedNodes, selectionBox, simulationState]);
 
     useEffect(() => {
         drawGraph();

@@ -118,7 +118,7 @@ export function drawEdge(ctx, fromNode, toNode, label, edges, currentEdge, theme
     ctx.fillText(label, shiftedLabelX, shiftedLabelY);
 }
 
-export function drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode }, theme) {
+export function drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode, isSimulationActive }, theme) {
     if (node.isStart) {
         ctx.strokeStyle = theme.edge;
         ctx.lineWidth = 2;
@@ -138,20 +138,30 @@ export function drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode }, 
     }
 
     if (node.isAccepting) {
-        ctx.strokeStyle = isSelected ? theme.nodeSelected : theme.nodeStroke;
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = isSelected ? theme.nodeSelected : (isSimulationActive ? '#fbbf24' : theme.nodeStroke);
+        ctx.lineWidth = isSimulationActive ? 4 : 2;
         ctx.beginPath();
         ctx.arc(node.x, node.y, ACCEPTING_RADIUS, 0, Math.PI * 2);
         ctx.stroke();
     }
 
-    ctx.fillStyle = isEdgeStartNode ? '#fcd34d' : (isHovered ? theme.nodeHover : theme.node);
-    ctx.strokeStyle = isSelected ? theme.nodeSelected : theme.nodeStroke;
-    ctx.lineWidth = isSelected ? 4 : 2;
+    ctx.fillStyle = isSimulationActive ? '#fef3c7' : (isEdgeStartNode ? '#fcd34d' : (isHovered ? theme.nodeHover : theme.node));
+    ctx.strokeStyle = isSelected ? theme.nodeSelected : (isSimulationActive ? '#fbbf24' : theme.nodeStroke);
+    ctx.lineWidth = isSelected ? 4 : (isSimulationActive ? 4 : 2);
     ctx.beginPath();
     ctx.arc(node.x, node.y, NODE_RADIUS, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
+
+    if (isSimulationActive) {
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, NODE_RADIUS + 8, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
 
     ctx.fillStyle = theme.text;
     ctx.font = 'bold 16px Inter, sans-serif';

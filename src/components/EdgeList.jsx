@@ -1,6 +1,6 @@
 import { Trash2 } from 'lucide-react';
 
-export function EdgeList({ edges, nodes, onUpdateLabel, onDelete, theme }) {
+export function EdgeList({ edges, nodes, onUpdateLabel, onDelete, theme, isSimulating = false }) {
     if (edges.length === 0) return null;
 
     return (
@@ -20,7 +20,8 @@ export function EdgeList({ edges, nodes, onUpdateLabel, onDelete, theme }) {
             className="p-3 border rounded-xl mb-3 shadow-sm"
             style={{
                 backgroundColor: theme.node,
-                borderColor: theme.border
+                borderColor: theme.border,
+                opacity: isSimulating ? 0.6 : 1
             }}
             >
             <div
@@ -35,6 +36,7 @@ export function EdgeList({ edges, nodes, onUpdateLabel, onDelete, theme }) {
                 placeholder="Label (e.g., a, b, 0, 1, ε)"
                 value={edge.label}
                 onChange={(e) => onUpdateLabel(edge.id, e.target.value)}
+                disabled={isSimulating}
                 className="flex-1 px-2 py-1 border rounded-lg text-sm"
                 style={{
                     backgroundColor: theme.canvas,
@@ -45,7 +47,12 @@ export function EdgeList({ edges, nodes, onUpdateLabel, onDelete, theme }) {
                 />
                 <button
                 onClick={() => onDelete(edge.id)}
+                disabled={isSimulating}
                 className="p-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
+                style={{
+                    opacity: isSimulating ? 0.5 : 1,
+                    cursor: isSimulating ? 'not-allowed' : 'pointer'
+                }}
                 title="Delete Edge"
                 >
                 <Trash2 size={14} />

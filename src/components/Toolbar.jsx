@@ -14,7 +14,8 @@ export function Toolbar({
     themeName,
     onThemeToggle,
     onClearCanvas,
-    onMultiAdd
+    onMultiAdd,
+    isSimulating = false
     }) {
     const modes = [
         { key: 'select', icon: MousePointer, label: 'Select & Move' },
@@ -49,10 +50,13 @@ export function Toolbar({
             <button
                 key={key}
                 onClick={() => onModeChange(key)}
+                disabled={isSimulating}
                 className="px-4 py-2 rounded-lg font-medium transition duration-150 ease-in-out shadow-sm flex items-center gap-2"
                 style={{
                 backgroundColor: mode === key ? theme.nodeSelected : theme.node,
-                color: mode === key ? '#ffffff' : theme.text
+                color: mode === key ? '#ffffff' : theme.text,
+                opacity: isSimulating ? 0.5 : 1,
+                cursor: isSimulating ? 'not-allowed' : 'pointer'
                 }}
             >
                 <IconComponent size={18} /> {label}
@@ -63,13 +67,13 @@ export function Toolbar({
         <div className="flex gap-2">
             <button
             onClick={onUndo}
-            disabled={!canUndo}
+            disabled={!canUndo || isSimulating}
             className="px-3 py-2 rounded-lg font-medium transition duration-150 ease-in-out shadow-sm flex items-center gap-2"
             style={{
-                backgroundColor: canUndo ? theme.node : theme.border,
-                color: canUndo ? theme.text : theme.nodeStroke,
-                opacity: canUndo ? 1 : 0.5,
-                cursor: canUndo ? 'pointer' : 'not-allowed'
+                backgroundColor: (canUndo && !isSimulating) ? theme.node : theme.border,
+                color: (canUndo && !isSimulating) ? theme.text : theme.nodeStroke,
+                opacity: (canUndo && !isSimulating) ? 1 : 0.5,
+                cursor: (canUndo && !isSimulating) ? 'pointer' : 'not-allowed'
             }}
             title="Undo (Ctrl+Z)"
             >
@@ -77,13 +81,13 @@ export function Toolbar({
             </button>
             <button
             onClick={onRedo}
-            disabled={!canRedo}
+            disabled={!canRedo || isSimulating}
             className="px-3 py-2 rounded-lg font-medium transition duration-150 ease-in-out shadow-sm flex items-center gap-2"
             style={{
-                backgroundColor: canRedo ? theme.node : theme.border,
-                color: canRedo ? theme.text : theme.nodeStroke,
-                opacity: canRedo ? 1 : 0.5,
-                cursor: canRedo ? 'pointer' : 'not-allowed'
+                backgroundColor: (canRedo && !isSimulating) ? theme.node : theme.border,
+                color: (canRedo && !isSimulating) ? theme.text : theme.nodeStroke,
+                opacity: (canRedo && !isSimulating) ? 1 : 0.5,
+                cursor: (canRedo && !isSimulating) ? 'pointer' : 'not-allowed'
             }}
             title="Redo (Ctrl+Y)"
             >
@@ -94,10 +98,13 @@ export function Toolbar({
         <div className="flex gap-2">
             <button
             onClick={onMultiAdd}
+            disabled={isSimulating}
             className="px-4 py-2 rounded-lg font-medium shadow-sm transition duration-150 ease-in-out flex items-center gap-2"
             style={{
                 backgroundColor: theme.node,
-                color: theme.text
+                color: theme.text,
+                opacity: isSimulating ? 0.5 : 1,
+                cursor: isSimulating ? 'not-allowed' : 'pointer'
             }}
             title="Add multiple states at once (M)"
             >
@@ -106,8 +113,13 @@ export function Toolbar({
 
             <button
             onClick={onClearCanvas}
+            disabled={isSimulating}
             className="px-4 py-2 rounded-lg text-white font-medium shadow-md transition duration-150 ease-in-out flex items-center gap-2"
-            style={{ backgroundColor: '#ef4444' }}
+            style={{ 
+                backgroundColor: '#ef4444',
+                opacity: isSimulating ? 0.5 : 1,
+                cursor: isSimulating ? 'not-allowed' : 'pointer'
+            }}
             title="Clear entire canvas"
             >
             <Trash2 size={18} /> Clear
@@ -117,10 +129,13 @@ export function Toolbar({
         <div className="flex gap-2 ml-auto">
             <button
             onClick={onThemeToggle}
+            disabled={isSimulating}
             className="px-4 py-2 rounded-lg font-medium shadow-sm transition duration-150 ease-in-out flex items-center gap-2"
             style={{
                 backgroundColor: theme.node,
-                color: theme.text
+                color: theme.text,
+                opacity: isSimulating ? 0.5 : 1,
+                cursor: isSimulating ? 'not-allowed' : 'pointer'
             }}
             title={`Current: ${themeName}`}
             >
@@ -128,17 +143,28 @@ export function Toolbar({
             </button>
             <button
             onClick={onExport}
+            disabled={isSimulating}
             className="px-4 py-2 rounded-lg text-white font-medium shadow-md transition duration-150 ease-in-out flex items-center gap-2"
-            style={{ backgroundColor: '#10b981' }}
+            style={{ 
+                backgroundColor: '#10b981',
+                opacity: isSimulating ? 0.5 : 1,
+                cursor: isSimulating ? 'not-allowed' : 'pointer'
+            }}
             >
             <Download size={18} /> Export
             </button>
             <label
-            className="px-4 py-2 rounded-lg text-white font-medium shadow-md transition duration-150 ease-in-out flex items-center gap-2 cursor-pointer"
+            className={`px-4 py-2 rounded-lg text-white font-medium shadow-md transition duration-150 ease-in-out flex items-center gap-2 ${isSimulating ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
             style={{ backgroundColor: '#a855f7' }}
             >
             <Upload size={18} /> Import
-            <input type="file" accept=".json" onChange={onImport} className="hidden" />
+            <input 
+                type="file" 
+                accept=".json" 
+                onChange={onImport} 
+                disabled={isSimulating}
+                className="hidden" 
+            />
             </label>
         </div>
         </div>

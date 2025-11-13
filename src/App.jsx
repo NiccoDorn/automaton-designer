@@ -5,6 +5,8 @@ import { PropertiesPanel } from './components/PropertiesPanel';
 import { EdgeLabelDialog } from './components/EdgeLabelDialog';
 import { KeyboardHelp } from './components/KeyboardHelp';
 import { MultiAddDialog } from './components/MultiAddDialog';
+import { SimulationPanel } from './components/SimulationPanel';
+import { SimulationResultOverlay } from './components/SimulationResultOverlay';
 import { useGraphDrawing } from './hooks/useGraphDrawing';
 import { useCanvasResize } from './hooks/useCanvasResize';
 import { useHistory } from './hooks/useHistory';
@@ -15,6 +17,7 @@ import { useDialogs } from './hooks/useDialogs';
 import { useAutomatonOperations } from './hooks/useAutomatonOperations';
 import { useCanvasInteractions } from './hooks/useCanvasInteractions';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { useSimulation } from './hooks/useSimulation';
 import { INITIAL_NODES, INITIAL_EDGES } from './constants';
 
 export default function App() {
@@ -78,6 +81,18 @@ export default function App() {
     openMultiAddDialog,
     closeMultiAddDialog
   } = useDialogs();
+
+  const {
+    isSimulating,
+    inputWord,
+    setInputWord,
+    currentStateId,
+    processedChars,
+    simulationResult,
+    showResultAnimation,
+    startSimulation,
+    stopSimulation
+  } = useSimulation(nodes, edges);
 
   const {
     addNode,
@@ -249,6 +264,16 @@ export default function App() {
   });
 
   useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && isSimulating) {
+        stopSimulation();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isSimulating, stopSimulation]);
+
+  useEffect(() => {
     if (errorMessage) {
       const timer = setTimeout(() => {
         setErrorMessage(null);
@@ -258,12 +283,14 @@ export default function App() {
   }, [errorMessage, setErrorMessage]);
 
   const handleModeChange = (newMode) => {
+    if (isSimulating) return;
     setMode(newMode);
     setEdgeStart(null);
     setSelectedNodes(new Set());
   };
 
   const handleImportWrapper = (e) => {
+    if (isSimulating) return;
     setErrorMessage(null);
     const file = e.target.files[0];
     if (file) {
@@ -282,6 +309,7 @@ export default function App() {
   };
 
   const handleClearCanvasWrapper = () => {
+    if (isSimulating) return;
     handleClearCanvas();
     setSelectedNode(null);
     setSelectedNodes(new Set());
@@ -301,6 +329,7 @@ export default function App() {
   };
 
   const handleEdgeLabelClick = (edgeId, x, y) => {
+    if (isSimulating) return;
     const edge = edges.find(e => e.id === edgeId);
     if (edge) {
       openEdgeLabelDialog(edge.id, edge.label, { x, y }, null);
@@ -318,7 +347,8 @@ export default function App() {
     currentTheme,
     offset,
     selectedNodes,
-    isSelecting ? { start: selectionStart, end: selectionEnd } : null
+    isSelecting ? { start: selectionStart, end: selectionEnd } : null,
+    isSimulating ? { currentStateId } : null
   );
   
   useCanvasResize(canvasRef, canvasContainerRef, drawGraph);
@@ -358,6 +388,7 @@ export default function App() {
         onThemeToggle={cycleTheme}
         onClearCanvas={handleClearCanvasWrapper}
         onMultiAdd={openMultiAddDialog}
+        isSimulating={isSimulating}
       />
 
       <KeyboardHelp theme={currentTheme} />
@@ -369,11 +400,11 @@ export default function App() {
           mode={mode}
           edgeStart={edgeStart}
           nodes={nodes}
-          onCanvasClick={handleCanvasClick}
-          onCanvasRightClick={handleCanvasRightClick}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
+          onCanvasClick={isSimulating ? () => {} : handleCanvasClick}
+          onCanvasRightClick={isSimulating ? (e) => e.preventDefault() : handleCanvasRightClick}
+          onMouseDown={isSimulating ? () => {} : handleMouseDown}
+          onMouseMove={isSimulating ? () => {} : handleMouseMove}
+          onMouseUp={isSimulating ? () => {} : handleMouseUp}
           theme={currentTheme}
           onEdgeLabelClick={handleEdgeLabelClick}
         />
@@ -386,30 +417,52 @@ export default function App() {
           onToggleAccepting={toggleAccepting}
           onSetStart={setStartState}
           onDeleteNode={(nodeId) => {
+            if (isSimulating) return;
             deleteNode(nodeId);
             setSelectedNode(null);
           }}
           onUpdateEdgeLabel={updateEdgeLabel}
           onDeleteEdge={deleteEdge}
           theme={currentTheme}
+          isSimulating={isSimulating}
         />
       </div>
 
-      <EdgeLabelDialog
-        isOpen={edgeLabelDialog.isOpen}
-        onClose={closeEdgeLabelDialog}
-        onSave={handleEdgeLabelSave}
-        initialLabel={edgeLabelDialog.initialLabel}
+      <SimulationPanel
+        inputWord={inputWord}
+        setInputWord={setInputWord}
+        onStart={startSimulation}
+        onStop={stopSimulation}
+        isSimulating={isSimulating}
+        processedChars={processedChars}
         theme={currentTheme}
-        position={edgeLabelDialog.position}
       />
 
-      <MultiAddDialog
-        isOpen={multiAddDialog}
-        onClose={closeMultiAddDialog}
-        onConfirm={handleMultiAddWrapper}
+      <SimulationResultOverlay
+        result={simulationResult}
+        isVisible={showResultAnimation}
         theme={currentTheme}
       />
+
+      {!isSimulating && (
+        <>
+          <EdgeLabelDialog
+            isOpen={edgeLabelDialog.isOpen}
+            onClose={closeEdgeLabelDialog}
+            onSave={handleEdgeLabelSave}
+            initialLabel={edgeLabelDialog.initialLabel}
+            theme={currentTheme}
+            position={edgeLabelDialog.position}
+          />
+
+          <MultiAddDialog
+            isOpen={multiAddDialog}
+            onClose={closeMultiAddDialog}
+            onConfirm={handleMultiAddWrapper}
+            theme={currentTheme}
+          />
+        </>
+      )}
     </div>
   );
 }
