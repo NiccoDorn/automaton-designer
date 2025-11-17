@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useState } from 'react';
 import { Toolbar } from './components/Toolbar';
 import { GraphCanvas } from './components/GraphCanvas';
 import { PropertiesPanel } from './components/PropertiesPanel';
@@ -23,6 +23,8 @@ import { INITIAL_NODES, INITIAL_EDGES } from './constants';
 export default function App() {
   const canvasRef = useRef(null);
   const canvasContainerRef = useRef(null);
+
+  const [deadStates, setDeadStates] = useState(new Set());
 
   const { currentTheme, cycleTheme, themeName } = useTheme();
   const { offset, isPanning, startPan, updatePan, endPan, panByOffset } = useCanvasPan();
@@ -366,7 +368,8 @@ export default function App() {
     offset,
     selectedNodes,
     isSelecting ? { start: selectionStart, end: selectionEnd } : null,
-    isSimulating ? { currentStateId } : null
+    isSimulating ? { currentStateId } : null,
+    deadStates
   );
   
   useCanvasResize(canvasRef, canvasContainerRef, drawGraph);
@@ -442,6 +445,7 @@ export default function App() {
               isStepMode={isStepMode}
               onStartStep={startStepMode}
               onStep={stepOnce}
+              simulationResult={simulationResult}
             />
           </div>
 
@@ -461,6 +465,7 @@ export default function App() {
             onDeleteEdge={deleteEdge}
             theme={currentTheme}
             isSimulating={isSimulating}
+            onDeadStatesDetected={setDeadStates}
           />
         </div>
       </div>

@@ -123,20 +123,15 @@ export function useSimulation(nodes, edges) {
 
         const charIndex = processedChars;
 
-        // Check if we've reached the end of input
         if (charIndex >= inputWord.length) {
             const currentNode = nodes.find(n => n.id === currentStateId);
             const success = currentNode?.isAccepting || false;
 
             setSimulationResult({
                 success,
-                message: success ? 'Accepted!' : 'Rejected!'
+                message: success ? 'Word accepted' : 'Word not accepted'
             });
-            setShowResultAnimation(true);
 
-            timeoutRef.current = setTimeout(() => {
-                resetSimulation();
-            }, 5000);
             return;
         }
 
@@ -148,20 +143,16 @@ export function useSimulation(nodes, edges) {
         if (possibleEdges.length === 0) {
             setSimulationResult({
                 success: false,
-                message: 'Rejected!'
+                message: 'Word not accepted'
             });
-            setShowResultAnimation(true);
 
-            timeoutRef.current = setTimeout(() => {
-                resetSimulation();
-            }, 5000);
             return;
         }
 
         const nextEdge = possibleEdges[0];
         setCurrentStateId(nextEdge.to);
         setProcessedChars(charIndex + 1);
-    }, [isStepMode, simulationResult, processedChars, inputWord, nodes, currentStateId, edges, resetSimulation]);
+    }, [isStepMode, simulationResult, processedChars, inputWord, nodes, currentStateId, edges]);
 
     useEffect(() => {
         return () => {

@@ -118,7 +118,7 @@ export function drawEdge(ctx, fromNode, toNode, label, edges, currentEdge, theme
     ctx.fillText(label, shiftedLabelX, shiftedLabelY);
 }
 
-export function drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode, isSimulationActive }, theme) {
+export function drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode, isSimulationActive, isDead }, theme) {
     if (node.isStart) {
         ctx.strokeStyle = theme.edge;
         ctx.lineWidth = 2;
@@ -175,4 +175,21 @@ export function drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode, is
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(node.label, node.x, node.y);
+
+    if (isDead) {
+        const indicatorX = node.x + NODE_RADIUS - 6;
+        const indicatorY = node.y + NODE_RADIUS - 6;
+        const indicatorRadius = 5;
+
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(indicatorX, indicatorY, indicatorRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#dc2626';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(indicatorX, indicatorY, indicatorRadius, 0, Math.PI * 2);
+        ctx.stroke();
+    }
 }

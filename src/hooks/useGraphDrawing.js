@@ -13,7 +13,8 @@ export function useGraphDrawing(
     offset,
     selectedNodes = new Set(),
     selectionBox = null,
-    simulationState = null
+    simulationState = null,
+    deadStates = new Set()
     ) {
     const drawGraph = useCallback(() => {
         const canvas = canvasRef.current;
@@ -81,17 +82,19 @@ export function useGraphDrawing(
             const isHovered = hoveredNode === node.id;
             const isEdgeStartNode = edgeStart === node.id;
             const isSimulationActive = simulationState?.currentStateId === node.id;
-            
+            const isDead = deadStates.has(node.id);
+
             drawNode(ctx, node, {
                 isSelected,
                 isHovered,
                 isEdgeStartNode,
-                isSimulationActive
+                isSimulationActive,
+                isDead
             }, theme);
         });
 
         ctx.restore();
-    }, [canvasRef, nodes, edges, selectedNode, hoveredNode, mode, edgeStart, theme, offset, selectedNodes, selectionBox, simulationState]);
+    }, [canvasRef, nodes, edges, selectedNode, hoveredNode, mode, edgeStart, theme, offset, selectedNodes, selectionBox, simulationState, deadStates]);
 
     useEffect(() => {
         drawGraph();
