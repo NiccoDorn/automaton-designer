@@ -2,72 +2,72 @@
   "nodes": [
     {
       "id": 0,
-      "x": 28,
-      "y": 105.19999694824219,
+      "x": 38,
+      "y": 97,
       "label": "q0",
       "isAccepting": false,
       "isStart": true
     },
     {
       "id": 1,
-      "x": 219,
-      "y": 22.199996948242188,
+      "x": 217,
+      "y": 16,
       "label": "q1",
       "isAccepting": true,
       "isStart": false
     },
     {
       "id": 2,
-      "x": 383,
-      "y": 99.19999694824219,
+      "x": 387,
+      "y": 92,
       "label": "q2",
       "isAccepting": false,
       "isStart": false
     },
     {
       "id": 3,
-      "x": 569,
-      "y": 38.19999694824219,
+      "x": 561,
+      "y": 21,
       "label": "q3",
       "isAccepting": true,
       "isStart": false
     },
     {
       "id": 4,
-      "x": 757,
-      "y": 92.19999694824219,
+      "x": 735,
+      "y": 90,
       "label": "q4",
       "isAccepting": false,
       "isStart": false
     },
     {
       "id": 5,
-      "x": 757,
-      "y": 319.1999969482422,
+      "x": 737,
+      "y": 316,
       "label": "q5",
       "isAccepting": true,
       "isStart": false
     },
     {
       "id": 6,
-      "x": 570,
-      "y": 399.1999969482422,
+      "x": 557,
+      "y": 382,
       "label": "q6",
       "isAccepting": false,
       "isStart": false
     },
     {
       "id": 7,
-      "x": 383,
-      "y": 307.1999969482422,
+      "x": 386,
+      "y": 321,
       "label": "q7",
       "isAccepting": true,
       "isStart": false
     },
     {
       "id": 8,
-      "x": 204,
-      "y": 384.1999969482422,
+      "x": 209,
+      "y": 385,
       "label": "q8",
       "isAccepting": false,
       "isStart": false

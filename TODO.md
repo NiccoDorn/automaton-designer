@@ -14,11 +14,11 @@
 
 | Task                                               | Priority | Effort | Done |
 | -------------------------------------------------- | -------- | ------ | ---- |
-| **NFA → DFA conversion**                           | P1       | M      | No   |
-| **DFA minimization (Hopcroft's algorithm)**        | P1       | M      | No   |
+| NFA → DFA conversion                               | P1       | M      | No   |
+| DFA minimization (Hopcroft's algorithm)            | P1       | M      | No   |
 | Table-Filling algorithm                            | P3       | M      | No   |
 | Brzozowski's algorithm (reversal-based)            | P3       | L      | No   |
-| **Regular Expression → NFA conversion**            | P1       | M      | No   |
+| Regular Expression → NFA conversion                | P1       | M      | No   |
 | Regular Expression → DFA conversion                | P3       | M      | No   |
 | DFA → Regular Expression conversion                | P3       | L      | No   |
 | NFA → Regular Expression conversion                | P3       | L      | No   |
@@ -58,8 +58,8 @@
 | Interactive automata graph (react-flow/d3-lite)                                      | P1       | M      | Yes  |
 | Visualize automata operations (union, intersection, complement, concatenation, star) | P2       | L      | No   |
 | Step-by-step algorithm visualization (Hopcroft, NFA→DFA)                             | P2       | L      | No   |
-| Step-by-step input simulation                                                        | P1       | M      | No   |
-| Highlight active states/transitions during simulation                                | P1       | S      | No   |
+| Step-by-step input simulation                                                        | P1       | M      | Yes  |
+| Highlight active states/transitions during simulation                                | P1       | S      | Yes  |
 | Optimize rendering for large automata (memoization, lazy updates)                    | P2       | M      | No   |
 | Theme support (Light/Dark/Tech)                                                      | P2       | M      | Yes  |
 
