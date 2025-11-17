@@ -15,7 +15,8 @@ export function useKeyboardShortcuts({
     setSelectedNodes,
     handleUndo,
     handleRedo,
-    panByOffset
+    panByOffset,
+    isStepMode
 }) {
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -64,6 +65,8 @@ export function useKeyboardShortcuts({
             }
 
             if (e.key === 's' || e.key === 'S') {
+                // Don't switch to select mode if in step mode (handled separately)
+                if (isStepMode) return;
                 e.preventDefault();
                 setMode('select');
                 setEdgeStart(null);
@@ -86,6 +89,7 @@ export function useKeyboardShortcuts({
     }, [
         edgeLabelDialog, multiAddDialog, closeEdgeLabelDialog, closeMultiAddDialog,
         deleteSelectedNodes, mode, setMode, setEdgeStart, openMultiAddDialog,
-        selectedNode, edges, setSelectedNodes, handleUndo, handleRedo, panByOffset
+        selectedNode, edges, setSelectedNodes, handleUndo, handleRedo, panByOffset,
+        isStepMode
     ]);
 }

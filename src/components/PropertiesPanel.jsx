@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { NodeEditor } from './NodeEditor';
 import { EdgeList } from './EdgeList';
+import { AnalysisPanel } from './AnalysisPanel';
 
 export function PropertiesPanel({
     selectedNode,
@@ -96,6 +97,13 @@ export function PropertiesPanel({
             </div>
             )}
         </div>
+
+        <AnalysisPanel
+            nodes={nodes}
+            edges={edges}
+            theme={theme}
+            isSimulating={isSimulating}
+        />
 
         {selectedNodeData ? (
             <>

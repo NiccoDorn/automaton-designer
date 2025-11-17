@@ -6,6 +6,9 @@ export function SimulationPanel({
     isSimulating,
     processedChars,
     theme,
+    isStepMode,
+    onStartStep,
+    onStep,
     }) {
     return (
         <div
@@ -58,22 +61,53 @@ export function SimulationPanel({
         )}
 
         {!isSimulating ? (
-            <button
-                onClick={onStart}
-                disabled={!inputWord.trim()}
-                className={`button-laser px-4 py-2 rounded-lg font-bold text-lg shadow-lg transition flex items-center gap-3 ${
-                    inputWord.trim()
-                        ? 'bg-green-600 hover:bg-green-700 text-white'
-                        : 'bg-gray-400 text-white cursor-not-allowed opacity-50'
-                }`}
-                title="Simulate (Enter)"
-            >
-                Run
-            </button>
+            <div className="flex gap-2">
+                <button
+                    onClick={onStart}
+                    disabled={!inputWord.trim()}
+                    className={`button-laser px-4 py-2 rounded-lg font-bold text-lg shadow-lg transition flex items-center gap-2 ${
+                        inputWord.trim()
+                            ? 'bg-green-600 hover:bg-green-700 text-white'
+                            : 'bg-gray-400 text-white cursor-not-allowed opacity-50'
+                    }`}
+                    title="Auto Simulate (Enter)"
+                >
+                    Run
+                </button>
+                <button
+                    onClick={onStartStep}
+                    disabled={!inputWord.trim()}
+                    className={`button-laser px-4 py-2 rounded-lg font-bold text-lg shadow-lg transition flex items-center gap-2 ${
+                        inputWord.trim()
+                            ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                            : 'bg-gray-400 text-white cursor-not-allowed opacity-50'
+                    }`}
+                    title="Step Through (S)"
+                >
+                    Step
+                </button>
+            </div>
+        ) : isStepMode ? (
+            <div className="flex gap-2">
+                <button
+                    onClick={onStep}
+                    className="px-4 py-2 rounded-lg font-bold text-lg shadow-lg bg-blue-600 hover:bg-blue-700 text-white transition flex items-center gap-2"
+                    title="Next Step (S)"
+                >
+                    Step
+                </button>
+                <button
+                    onClick={onStop}
+                    className="px-4 py-2 rounded-lg font-bold text-lg shadow-lg bg-red-500 hover:bg-red-600 text-white transition flex items-center gap-2"
+                    title="Reset (Escape)"
+                >
+                    Reset
+                </button>
+            </div>
         ) : (
             <button
                 onClick={onStop}
-                className="px-4 py-2 rounded-lg font-bold text-lg shadow-lg bg-red-500 hover:bg-red-600 text-white transition flex items-center gap-3"
+                className="px-4 py-2 rounded-lg font-bold text-lg shadow-lg bg-red-500 hover:bg-red-600 text-white transition flex items-center gap-2"
                 title="Stop (Escape)"
             >
                 Stop
