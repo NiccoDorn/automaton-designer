@@ -34,7 +34,7 @@ export function checkLanguageEmptiness(nodes, edges) {
     } else {
         return {
             isEmpty: true,
-            message: `Language is empty. No accepting states reachable from start state.`
+            message: `Language is empty. No accepting states reachable from start state, including itself.`
         };
     }
 }
