@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import { NodeEditor } from './NodeEditor';
-import { EdgeList } from './EdgeList';
-import { AnalysisPanel } from './AnalysisPanel';
+import { Settings, Type, FlaskConical } from 'lucide-react';
+import { CollapsibleSection } from './CollapsibleSection';
+import { PropertiesSection } from './PropertiesSection';
+import { GreekSymbolsSection } from './GreekSymbolsSection';
+import { AnalysisSection } from './AnalysisSection';
 
 export function PropertiesPanel({
     selectedNode,
@@ -15,127 +16,84 @@ export function PropertiesPanel({
     onUpdateEdgeLabel,
     onDeleteEdge,
     theme,
-    isSimulating = false
-    }) {
+    isSimulating = false,
+    onDeadStatesDetected
+}) {
+    const [isPropertiesExpanded, setIsPropertiesExpanded] = useState(true);
     const [isGreekExpanded, setIsGreekExpanded] = useState(false);
-    const selectedNodeData = nodes.find(n => n.id === selectedNode);
-    const selectedEdges = edges.filter(e => e.from === selectedNode);
-
-    const greekChars = [
-        { symbol: 'ε', name: 'epsilon' },
-        { symbol: 'α', name: 'alpha' },
-        { symbol: 'β', name: 'beta' },
-        { symbol: 'γ', name: 'gamma' },
-        { symbol: 'δ', name: 'delta' }
-    ];
-
-    const copyToClipboard = (char) => {
-        navigator.clipboard.writeText(char);
-    };
+    const [isAnalysisExpanded, setIsAnalysisExpanded] = useState(false);
 
     return (
         <div
-        className="w-80 border-l p-6 overflow-y-auto shadow-lg"
-        style={{
-            backgroundColor: theme.panel,
-            borderColor: theme.border,
-            color: theme.text,
-            opacity: isSimulating ? 0.6 : 1,
-            pointerEvents: isSimulating ? 'none' : 'auto'
-        }}
+            className="w-80 border-l p-6 overflow-y-auto shadow-lg"
+            style={{
+                backgroundColor: theme.panel,
+                borderColor: theme.border,
+                color: theme.text,
+                opacity: isSimulating ? 0.6 : 1,
+                pointerEvents: isSimulating ? 'none' : 'auto'
+            }}
         >
-        <h3
-            className="font-bold text-xl mb-6 border-b pb-2"
-            style={{ borderColor: theme.border }}
-        >
-            Edit Properties
-        </h3>
-
-        <div
-            className="mb-6 border rounded-lg"
-            style={{ borderColor: theme.border }}
-        >
-            <button
-            onClick={() => setIsGreekExpanded(!isGreekExpanded)}
-            disabled={isSimulating}
-            className="w-full px-4 py-3 flex items-center justify-between"
-            style={{ color: theme.text }}
-            >
-            <span className="font-semibold text-sm">Special Greek Characters</span>
-            {isGreekExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-            </button>
-            
-            {isGreekExpanded && (
-            <div
-                className="px-4 pb-3 border-t"
+            <h3
+                className="font-bold text-xl mb-6 border-b pb-2"
                 style={{ borderColor: theme.border }}
             >
-                <div className="grid grid-cols-5 gap-2 mt-3">
-                {greekChars.map(({ symbol, name }) => (
-                    <button
-                    key={symbol}
-                    onClick={() => copyToClipboard(symbol)}
-                    disabled={isSimulating}
-                    className="p-2 rounded-lg text-center font-bold text-lg"
-                    style={{
-                        backgroundColor: theme.canvas,
-                        color: theme.text,
-                        border: `1px solid ${theme.border}`
-                    }}
-                    title={`Copy ${name}`}
-                    >
-                    {symbol}
-                    </button>
-                ))}
-                </div>
-                <p
-                className="text-xs mt-2 italic"
-                style={{ color: theme.nodeStroke }}
-                >
-                Click to copy
-                </p>
-            </div>
-            )}
-        </div>
+                Automaton Panel
+            </h3>
 
-        <AnalysisPanel
-            nodes={nodes}
-            edges={edges}
-            theme={theme}
-            isSimulating={isSimulating}
-        />
-
-        {selectedNodeData ? (
-            <>
-            <NodeEditor
-                node={selectedNodeData}
-                onUpdateLabel={(label) => onUpdateNodeLabel(selectedNode, label)}
-                onToggleAccepting={() => onToggleAccepting(selectedNode)}
-                onSetStart={() => onSetStart(selectedNode)}
-                onDelete={() => onDeleteNode(selectedNode)}
+            <CollapsibleSection
+                title="Properties"
+                icon={Settings}
+                isExpanded={isPropertiesExpanded}
+                onToggle={() => setIsPropertiesExpanded(!isPropertiesExpanded)}
                 theme={theme}
-                isSimulating={isSimulating}
-            />
-            <EdgeList
-                edges={selectedEdges}
-                nodes={nodes}
-                onUpdateLabel={onUpdateEdgeLabel}
-                onDelete={onDeleteEdge}
-                theme={theme}
-                isSimulating={isSimulating}
-            />
-            </>
-        ) : (
-            <p
-            className="text-sm italic"
-            style={{ color: theme.nodeStroke }}
+                isDisabled={isSimulating}
             >
-            {isSimulating
-                ? 'Simulation running... Properties locked. Press ESC to escape the simulation, Neo!'
-                : 'Click on a state in the canvas to view and edit its properties, or start by using the tools in the toolbar!'
-            }
-            </p>
-        )}
+                <PropertiesSection
+                    selectedNode={selectedNode}
+                    nodes={nodes}
+                    edges={edges}
+                    onUpdateNodeLabel={onUpdateNodeLabel}
+                    onToggleAccepting={onToggleAccepting}
+                    onSetStart={onSetStart}
+                    onDeleteNode={onDeleteNode}
+                    onUpdateEdgeLabel={onUpdateEdgeLabel}
+                    onDeleteEdge={onDeleteEdge}
+                    theme={theme}
+                    isSimulating={isSimulating}
+                />
+            </CollapsibleSection>
+
+            <CollapsibleSection
+                title="Greek Symbols"
+                icon={Type}
+                isExpanded={isGreekExpanded}
+                onToggle={() => setIsGreekExpanded(!isGreekExpanded)}
+                theme={theme}
+                isDisabled={isSimulating}
+            >
+                <GreekSymbolsSection
+                    theme={theme}
+                    isSimulating={isSimulating}
+                />
+            </CollapsibleSection>
+
+            <CollapsibleSection
+                title="Analysis Tools"
+                icon={FlaskConical}
+                isExpanded={isAnalysisExpanded}
+                onToggle={() => setIsAnalysisExpanded(!isAnalysisExpanded)}
+                theme={theme}
+                isDisabled={isSimulating}
+            >
+                <AnalysisSection
+                    nodes={nodes}
+                    edges={edges}
+                    theme={theme}
+                    isSimulating={isSimulating}
+                    onDeadStatesDetected={onDeadStatesDetected}
+                />
+            </CollapsibleSection>
         </div>
     );
 }

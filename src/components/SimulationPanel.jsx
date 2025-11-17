@@ -9,6 +9,7 @@ export function SimulationPanel({
     isStepMode,
     onStartStep,
     onStep,
+    simulationResult,
     }) {
     return (
         <div
@@ -47,7 +48,7 @@ export function SimulationPanel({
             />
         </div>
 
-        {processedChars > 0 && (
+        {processedChars > 0 && !simulationResult && (
             <span
             className="text-base font-bold px-3 py-1 rounded-lg"
             style={{
@@ -60,8 +61,21 @@ export function SimulationPanel({
             </span>
         )}
 
+        {isStepMode && simulationResult && (
+            <span
+            className="text-base font-bold px-3 py-1 rounded-lg"
+            style={{
+                color: simulationResult.success ? '#10b981' : '#ef4444',
+                backgroundColor: theme.canvas,
+                border: `2px solid ${simulationResult.success ? '#10b981' : '#ef4444'}`,
+            }}
+            >
+            {simulationResult.message}
+            </span>
+        )}
+
         {!isSimulating ? (
-            <div className="flex gap-2">
+            <div className="flex gap-2" style={{ minWidth: '200px' }}>
                 <button
                     onClick={onStart}
                     disabled={!inputWord.trim()}
@@ -87,31 +101,25 @@ export function SimulationPanel({
                     Step
                 </button>
             </div>
-        ) : isStepMode ? (
-            <div className="flex gap-2">
-                <button
-                    onClick={onStep}
-                    className="px-4 py-2 rounded-lg font-bold text-lg shadow-lg bg-blue-600 hover:bg-blue-700 text-white transition flex items-center gap-2"
-                    title="Next Step (S)"
-                >
-                    Step
-                </button>
+        ) : (
+            <div className="flex gap-2" style={{ minWidth: '200px' }}>
+                {isStepMode && (
+                    <button
+                        onClick={onStep}
+                        className="px-4 py-2 rounded-lg font-bold text-lg shadow-lg bg-blue-600 hover:bg-blue-700 text-white transition flex items-center gap-2"
+                        title="Next Step (S)"
+                    >
+                        Step
+                    </button>
+                )}
                 <button
                     onClick={onStop}
                     className="px-4 py-2 rounded-lg font-bold text-lg shadow-lg bg-red-500 hover:bg-red-600 text-white transition flex items-center gap-2"
-                    title="Reset (Escape)"
+                    title={isStepMode ? "Reset (Escape)" : "Stop (Escape)"}
                 >
-                    Reset
+                    {isStepMode ? "Reset" : "Stop"}
                 </button>
             </div>
-        ) : (
-            <button
-                onClick={onStop}
-                className="px-4 py-2 rounded-lg font-bold text-lg shadow-lg bg-red-500 hover:bg-red-600 text-white transition flex items-center gap-2"
-                title="Stop (Escape)"
-            >
-                Stop
-            </button>
         )}
         </div>
     );
