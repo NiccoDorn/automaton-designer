@@ -91,7 +91,10 @@ export default function App() {
     simulationResult,
     showResultAnimation,
     startSimulation,
-    stopSimulation
+    stopSimulation,
+    isStepMode,
+    startStepMode,
+    stepOnce
   } = useSimulation(nodes, edges);
 
   const {
@@ -260,7 +263,8 @@ export default function App() {
     setSelectedNodes,
     panByOffset,
     handleUndo,
-    handleRedo
+    handleRedo,
+    isStepMode
   });
 
   useEffect(() => {
@@ -272,6 +276,20 @@ export default function App() {
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
   }, [isSimulating, stopSimulation]);
+
+  useEffect(() => {
+    const handleStep = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
+      }
+      if (isStepMode && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault();
+        stepOnce();
+      }
+    };
+    window.addEventListener('keydown', handleStep);
+    return () => window.removeEventListener('keydown', handleStep);
+  }, [isStepMode, stepOnce]);
 
   useEffect(() => {
     if (errorMessage) {
@@ -421,6 +439,9 @@ export default function App() {
               isSimulating={isSimulating}
               processedChars={processedChars}
               theme={currentTheme}
+              isStepMode={isStepMode}
+              onStartStep={startStepMode}
+              onStep={stepOnce}
             />
           </div>
 

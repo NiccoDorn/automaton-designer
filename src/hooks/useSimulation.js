@@ -7,6 +7,7 @@ export function useSimulation(nodes, edges) {
     const [processedChars, setProcessedChars] = useState(0);
     const [simulationResult, setSimulationResult] = useState(null);
     const [showResultAnimation, setShowResultAnimation] = useState(false);
+    const [isStepMode, setIsStepMode] = useState(false);
     const timeoutRef = useRef(null);
 
     const resetSimulation = useCallback(() => {
@@ -15,6 +16,7 @@ export function useSimulation(nodes, edges) {
         setProcessedChars(0);
         setSimulationResult(null);
         setShowResultAnimation(false);
+        setIsStepMode(false);
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
             timeoutRef.current = null;
@@ -23,18 +25,25 @@ export function useSimulation(nodes, edges) {
 
     const simulateStep = useCallback((stateId, charIndex) => {
         if (charIndex >= inputWord.length) {
-            const currentNode = nodes.find(n => n.id === stateId);
-            const success = currentNode?.isAccepting || false;
-            
-            setSimulationResult({
-                success,
-                message: success ? 'Accepted!' : 'Rejected!'
-            });
-            setShowResultAnimation(true);
-            
+            // First, highlight the final state
+            setCurrentStateId(stateId);
+            setProcessedChars(charIndex);
+
+            // Then after a delay, show the result
             timeoutRef.current = setTimeout(() => {
-                resetSimulation();
-            }, 5000);
+                const currentNode = nodes.find(n => n.id === stateId);
+                const success = currentNode?.isAccepting || false;
+
+                setSimulationResult({
+                    success,
+                    message: success ? 'Accepted!' : 'Rejected!'
+                });
+                setShowResultAnimation(true);
+
+                timeoutRef.current = setTimeout(() => {
+                    resetSimulation();
+                }, 5000);
+            }, 600);
             return;
         }
 
@@ -91,6 +100,69 @@ export function useSimulation(nodes, edges) {
         resetSimulation();
     }, [resetSimulation]);
 
+    const startStepMode = useCallback(() => {
+        if (!inputWord.trim() || isSimulating) return;
+
+        const startNode = nodes.find(n => n.isStart);
+        if (!startNode) {
+            setSimulationResult({ success: false, message: 'No start state defined!' });
+            setShowResultAnimation(true);
+            return;
+        }
+
+        setIsSimulating(true);
+        setIsStepMode(true);
+        setCurrentStateId(startNode.id);
+        setProcessedChars(0);
+        setSimulationResult(null);
+        setShowResultAnimation(false);
+    }, [inputWord, isSimulating, nodes]);
+
+    const stepOnce = useCallback(() => {
+        if (!isStepMode || simulationResult) return;
+
+        const charIndex = processedChars;
+
+        // Check if we've reached the end of input
+        if (charIndex >= inputWord.length) {
+            const currentNode = nodes.find(n => n.id === currentStateId);
+            const success = currentNode?.isAccepting || false;
+
+            setSimulationResult({
+                success,
+                message: success ? 'Accepted!' : 'Rejected!'
+            });
+            setShowResultAnimation(true);
+
+            timeoutRef.current = setTimeout(() => {
+                resetSimulation();
+            }, 5000);
+            return;
+        }
+
+        const char = inputWord[charIndex];
+        const possibleEdges = edges.filter(e =>
+            e.from === currentStateId && (e.label === char || e.label.split(',').map(l => l.trim()).includes(char))
+        );
+
+        if (possibleEdges.length === 0) {
+            setSimulationResult({
+                success: false,
+                message: 'Rejected!'
+            });
+            setShowResultAnimation(true);
+
+            timeoutRef.current = setTimeout(() => {
+                resetSimulation();
+            }, 5000);
+            return;
+        }
+
+        const nextEdge = possibleEdges[0];
+        setCurrentStateId(nextEdge.to);
+        setProcessedChars(charIndex + 1);
+    }, [isStepMode, simulationResult, processedChars, inputWord, nodes, currentStateId, edges, resetSimulation]);
+
     useEffect(() => {
         return () => {
             if (timeoutRef.current) {
@@ -108,6 +180,9 @@ export function useSimulation(nodes, edges) {
         simulationResult,
         showResultAnimation,
         startSimulation,
-        stopSimulation
+        stopSimulation,
+        isStepMode,
+        startStepMode,
+        stepOnce
     };
 }

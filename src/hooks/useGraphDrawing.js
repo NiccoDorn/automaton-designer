@@ -60,8 +60,7 @@ export function useGraphDrawing(
         const toNode = nodes.find(n => n.id === edge.to);
         if (!fromNode || !toNode) return;
 
-        const isActiveSimulation = simulationState?.currentStateId === edge.to
-            || simulationState?.currentStateId === edge.from;
+        const isActiveSimulation = simulationState?.currentStateId === edge.from;
 
         ctx.strokeStyle = isActiveSimulation ? '#fbbf24' : theme.edge;
         ctx.lineWidth = isActiveSimulation ? 4 : 2;
