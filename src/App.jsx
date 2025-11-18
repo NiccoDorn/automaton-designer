@@ -266,7 +266,9 @@ export default function App() {
     panByOffset,
     handleUndo,
     handleRedo,
-    isStepMode
+    isStepMode,
+    nodes,
+    setSelectedNode
   });
 
   useEffect(() => {

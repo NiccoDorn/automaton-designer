@@ -26,10 +26,11 @@
 | Automata operations: Union, Intersection, Cmplt    | P2       | L      | No   |
 | Automata operations: Concatenation, Kleene Star    | P2       | L      | No   |
 | Check equivalence of two DFAs                      | P2       | M      | No   |
-| Check emptiness of language accepted by automaton  | P2       | S      | No   |
+| Check emptiness of language accepted by automaton  | P2       | S      | Yes  |
 | Check finiteness of language accepted by automaton | P2       | M      | No   |
-| Detect unreachable/dead states                     | P2       | S      | No   | Red circle if no edges, vanishes once edges exist
-| Check completeness of transitions (DFA validation) | P2       | S      | No   |
+| Detect unreachable states                          | P2       | S      | Yes  |
+| Detect dead states                                 | P2       | S      | Yes  | Red dot indicator on dead states
+| Check completeness of transitions (DFA validation) | P2       | S      | Yes  |
 | Save/load automata (local storage, JSON)           | P1       | M      | Yes  |
 | Export/import automata (file, JSON format)         | P2       | S      | Yes  |
 | Export visualizations (SVG/PNG)                    | P3       | M      | No   | Use Keyboard Shortcut "p" for print => opens dialog to select png/svg/pdf

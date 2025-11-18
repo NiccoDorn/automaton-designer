@@ -9,13 +9,35 @@ A lightweight React + Vite app for designing and simulating state automata.
 
 ## Features
 
-- Interactive visual Automaton designer with canvas-based drawing
+### Core Functionality
+- Interactive visual automaton designer with canvas-based drawing
 - (Bulk) add/delete & edit states and transitions
 - Import/Export automata as JSON
 - Accepting states and start state configuration
-- Multiple interaction modes (Select, {Add Node, Add Edge}, Move, Pan, Scroll)
+- Multiple interaction modes (Select, Add Node/Edge, Move, Pan, Scroll)
+- Collapsible panel interface with Properties, Greek Symbols, and Analysis Tools
+
+### Simulation
+- Real-time automaton simulation with visual feedback
+- Step-through mode for manual simulation control
+- Highlight active states and outgoing transitions
+- Input validation and acceptance/rejection feedback
+
+### Analysis Tools
+- Check language emptiness
+- Detect unreachable states
+- Detect dead states with visual indicators (red dot)
+- Check DFA completeness and determinism
+
+### User Experience
 - Responsive design with Tailwind CSS
-- Theme support (Light/Dark/Tech)
+- Theme support (Light/Dark/Tech) with persistent state
+- Keyboard shortcuts for all major functions
+- Tab navigation through states (starting from start state)
+- Undo/Redo with bounded history (100 steps)
+- Auto-expand properties panel when selecting nodes
+- Arrow key canvas panning (disabled in input fields)
+- Multi-select states and connected neighbors (i key)
 
 ## Prerequisites
 

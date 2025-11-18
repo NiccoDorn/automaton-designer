@@ -62,9 +62,10 @@ export function useGraphDrawing(
         if (!fromNode || !toNode) return;
 
         const isActiveSimulation = simulationState?.currentStateId === edge.from;
+        const isSelectedEdge = selectedNodes.has(edge.from) && selectedNodes.has(edge.to);
 
-        ctx.strokeStyle = isActiveSimulation ? '#fbbf24' : theme.edge;
-        ctx.lineWidth = isActiveSimulation ? 4 : 2;
+        ctx.strokeStyle = isActiveSimulation ? '#fbbf24' : (isSelectedEdge ? theme.nodeSelected : theme.edge);
+        ctx.lineWidth = isActiveSimulation ? 4 : (isSelectedEdge ? 3 : 2);
         ctx.fillStyle = theme.edgeLabel;
         ctx.font = '14px Inter, sans-serif';
         ctx.textAlign = 'center';

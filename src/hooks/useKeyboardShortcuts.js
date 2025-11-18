@@ -16,7 +16,9 @@ export function useKeyboardShortcuts({
     handleUndo,
     handleRedo,
     panByOffset,
-    isStepMode
+    isStepMode,
+    nodes,
+    setSelectedNode
 }) {
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -65,11 +67,39 @@ export function useKeyboardShortcuts({
             }
 
             if (e.key === 's' || e.key === 'S') {
-                // Don't switch to select mode if in step mode (handled separately)
                 if (isStepMode) return;
                 e.preventDefault();
                 setMode('select');
                 setEdgeStart(null);
+            }
+
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                if (nodes.length === 0) return;
+
+                const startNode = nodes.find(n => n.isStart);
+                const orderedNodes = [];
+
+                if (startNode) {
+                    orderedNodes.push(startNode);
+                    nodes.forEach(n => {
+                        if (n.id !== startNode.id) {
+                            orderedNodes.push(n);
+                        }
+                    });
+                } else {
+                    orderedNodes.push(...nodes);
+                }
+
+                if (!selectedNode) {
+                    setSelectedNode(orderedNodes[0].id);
+                } else {
+                    const currentIndex = orderedNodes.findIndex(n => n.id === selectedNode);
+                    const nextIndex = (currentIndex + 1) % orderedNodes.length;
+                    setSelectedNode(orderedNodes[nextIndex].id);
+                }
+
+                setSelectedNodes(new Set());
             }
 
             if (e.ctrlKey || e.metaKey) {
@@ -90,6 +120,6 @@ export function useKeyboardShortcuts({
         edgeLabelDialog, multiAddDialog, closeEdgeLabelDialog, closeMultiAddDialog,
         deleteSelectedNodes, mode, setMode, setEdgeStart, openMultiAddDialog,
         selectedNode, edges, setSelectedNodes, handleUndo, handleRedo, panByOffset,
-        isStepMode
+        isStepMode, nodes, setSelectedNode
     ]);
 }

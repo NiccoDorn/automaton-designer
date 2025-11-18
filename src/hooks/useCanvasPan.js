@@ -67,6 +67,10 @@ export function useCanvasPan() {
 
     useEffect(() => {
         const handleKeyDown = (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+
             if (e.key.startsWith('Arrow')) {
                 e.preventDefault();
                 pressedKeysRef.current.add(e.key);
@@ -75,10 +79,14 @@ export function useCanvasPan() {
         };
 
         const handleKeyUp = (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+
             if (e.key.startsWith('Arrow')) {
                 e.preventDefault();
                 pressedKeysRef.current.delete(e.key);
-                
+
                 if (pressedKeysRef.current.size === 0) {
                     stopAnimatePan();
                 }
