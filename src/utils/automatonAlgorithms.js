@@ -92,18 +92,10 @@ export function detectDeadStates(nodes, edges) {
         }
     }
 
-    const dead = new Set(
-        nodes.filter(n => !canReachAccepting.has(n.id)).map(n => n.id)
-    );
+    const dead = new Set(nodes.filter(n => !canReachAccepting.has(n.id)).map(n => n.id));
+    const message = dead.size > 0 ? `Found ${dead.size} dead state(s)` : 'No dead states found';
 
-    const message = dead.size > 0
-        ? `Found ${dead.size} dead state(s)`
-        : 'No dead states found';
-
-    return {
-        dead,
-        message
-    };
+    return { dead, message };
 }
 
 export function checkDFACompleteness(nodes, edges) {
@@ -154,7 +146,7 @@ export function checkDFACompleteness(nodes, edges) {
         });
 
         let hasNondeterminism = false;
-        for (const [_symbol, targets] of symbolToTargets.entries()) {
+        for (const [targets] of symbolToTargets.entries()) { // _symbols maybe needed later
             if (targets.length > 1) {
                 hasNondeterminism = true;
                 break;
@@ -183,20 +175,12 @@ export function checkDFACompleteness(nodes, edges) {
         const statesWithMissing = incompleteStates.filter(s => s.missingSymbols.length > 0);
         const statesWithNondeterminism = incompleteStates.filter(s => s.hasNondeterminism);
 
-        if (statesWithMissing.length > 0) {
-            issues.push(`${statesWithMissing.length} state(s) missing transitions`);
-        }
+        if (statesWithMissing.length > 0) { issues.push(`${statesWithMissing.length} state(s) missing transitions`); }
         if (statesWithNondeterminism.length > 0) {
             issues.push(`${statesWithNondeterminism.length} state(s) with non-deterministic transitions`);
         }
-
         message = `DFA is incomplete: ${issues.join(', ')}.`;
     }
 
-    return {
-        isComplete,
-        message,
-        incompleteStates,
-        alphabet
-    };
+    return { isComplete, message, incompleteStates, alphabet };
 }

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Keyboard, ChevronDown, ChevronUp } from 'lucide-react';
 
-export function KeyboardHelp({ theme }) {
-    const [isExpanded, setIsExpanded] = useState(false);
+export function KeyboardHelp({ theme, isVisible, isExpanded, setIsExpanded }) {
+    const [isHovered, setIsHovered] = useState(false);
 
     const shortcuts = [
         { key: 'A', description: 'Toggle Add mode' },
@@ -10,12 +10,20 @@ export function KeyboardHelp({ theme }) {
         { key: 'D', description: 'Delete selected node(s)' },
         { key: 'M', description: 'Multi-Add states' },
         { key: 'I', description: 'Select connected nodes' },
+        { key: 'W', description: 'Set as start state' },
+        { key: 'T', description: 'Toggle shortcuts menu' },
+        { key: 'Enter', description: 'Toggle accepting (Select mode)' },
+        { key: '↹', description: 'Cycle through nodes'},
         { key: '←↑→↓', description: 'Pan canvas' },
         { key: 'Ctrl+X', description: 'Cancel Dialog Window' },
         { key: 'Ctrl+Z', description: 'Undo' },
         { key: 'Ctrl+Y', description: 'Redo' },
         { key: 'Right Click', description: 'Deselect edge start' },
     ];
+
+    if (!isVisible) return null;
+
+    const shouldExpand = isExpanded || isHovered;
 
     return (
         <div
@@ -26,8 +34,8 @@ export function KeyboardHelp({ theme }) {
             border: '1px solid',
             maxWidth: '300px'
         }}
-        onMouseEnter={() => setIsExpanded(true)}
-        onMouseLeave={() => setIsExpanded(false)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         >
         <div
             className="w-full px-4 py-2 flex items-center justify-between cursor-default"
@@ -35,12 +43,12 @@ export function KeyboardHelp({ theme }) {
         >
             <div className="flex items-center gap-2">
             <Keyboard size={18} />
-            <span className="font-semibold">Keyboard Shortcuts</span>
+            <span className="font-semibold">Keyboard Shortcuts (t)</span>
             </div>
-            {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            {shouldExpand ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
         </div>
         
-        {isExpanded && (
+        {shouldExpand && (
             <div
             className="px-4 pb-3 pt-2 border-t"
             style={{ borderColor: theme.border }}

@@ -18,7 +18,11 @@ export function useKeyboardShortcuts({
     panByOffset,
     isStepMode,
     nodes,
-    setSelectedNode
+    setSelectedNode,
+    toggleAccepting,
+    setStartState,
+    setShortcutsVisible,
+    setShortcutsExpanded
 }) {
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -56,7 +60,7 @@ export function useKeyboardShortcuts({
 
             if (e.key === 'i' || e.key === 'I') {
                 e.preventDefault();
-                if (selectedNode) {
+                if (selectedNode !== null && selectedNode !== undefined) {
                     const connected = new Set([selectedNode]);
                     edges.forEach(edge => {
                         if (edge.from === selectedNode) connected.add(edge.to);
@@ -76,30 +80,30 @@ export function useKeyboardShortcuts({
             if (e.key === 'Tab') {
                 e.preventDefault();
                 if (nodes.length === 0) return;
-
-                const startNode = nodes.find(n => n.isStart);
-                const orderedNodes = [];
-
-                if (startNode) {
-                    orderedNodes.push(startNode);
-                    nodes.forEach(n => {
-                        if (n.id !== startNode.id) {
-                            orderedNodes.push(n);
-                        }
-                    });
-                } else {
-                    orderedNodes.push(...nodes);
-                }
-
-                if (!selectedNode) {
-                    setSelectedNode(orderedNodes[0].id);
-                } else {
-                    const currentIndex = orderedNodes.findIndex(n => n.id === selectedNode);
-                    const nextIndex = (currentIndex + 1) % orderedNodes.length;
-                    setSelectedNode(orderedNodes[nextIndex].id);
-                }
-
+                
+                const currentIndex = nodes.findIndex(n => n.id === selectedNode);
+                const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % nodes.length;
+                setSelectedNode(nodes[nextIndex].id);
                 setSelectedNodes(new Set());
+            }
+
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (mode === 'select' && selectedNode !== null && selectedNode !== undefined) {
+                    toggleAccepting(selectedNode);
+                }
+            }
+
+            if (e.key === 't' || e.key === 'T') {
+                e.preventDefault();
+                setShortcutsExpanded(prev => !prev);
+            }
+
+            if (e.key === 'w' || e.key === 'W') {
+                e.preventDefault();
+                if (selectedNode !== null && selectedNode !== undefined) {
+                    setStartState(selectedNode);
+                }
             }
 
             if (e.ctrlKey || e.metaKey) {
@@ -120,6 +124,6 @@ export function useKeyboardShortcuts({
         edgeLabelDialog, multiAddDialog, closeEdgeLabelDialog, closeMultiAddDialog,
         deleteSelectedNodes, mode, setMode, setEdgeStart, openMultiAddDialog,
         selectedNode, edges, setSelectedNodes, handleUndo, handleRedo, panByOffset,
-        isStepMode, nodes, setSelectedNode
+        isStepMode, nodes, setSelectedNode, toggleAccepting, setStartState, setShortcutsVisible, setShortcutsExpanded
     ]);
 }

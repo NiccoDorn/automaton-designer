@@ -25,6 +25,8 @@ export default function App() {
   const canvasContainerRef = useRef(null);
 
   const [deadStates, setDeadStates] = useState(new Set());
+  const [shortcutsVisible, setShortcutsVisible] = useState(true);
+  const [shortcutsExpanded, setShortcutsExpanded] = useState(false);
 
   const { currentTheme, cycleTheme, themeName } = useTheme();
   const { offset, isPanning, startPan, updatePan, endPan, panByOffset } = useCanvasPan();
@@ -268,7 +270,11 @@ export default function App() {
     handleRedo,
     isStepMode,
     nodes,
-    setSelectedNode
+    setSelectedNode,
+    toggleAccepting,
+    setStartState,
+    setShortcutsVisible,
+    setShortcutsExpanded
   });
 
   useEffect(() => {
@@ -414,12 +420,10 @@ export default function App() {
         isSimulating={isSimulating}
       />
 
-      <KeyboardHelp theme={currentTheme} />
+      <KeyboardHelp theme={currentTheme} isVisible={shortcutsVisible} isExpanded={shortcutsExpanded} setIsExpanded={setShortcutsExpanded} />
 
-      {/* Updated layout */}
       <div className="flex-1 flex flex-col min-h-0">
         <div className="flex flex-1 min-h-0">
-          {/* Canvas + Simulation stacked vertically */}
           <div className="flex flex-col flex-1 min-h-0">
             <GraphCanvas
               canvasRef={canvasRef}
