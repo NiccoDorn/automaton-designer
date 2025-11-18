@@ -19,6 +19,7 @@ export function useGraphDrawing(
     const drawGraph = useCallback(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
+
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -31,8 +32,8 @@ export function useGraphDrawing(
             const minY = Math.min(selectionBox.start.y, selectionBox.end.y);
             const maxY = Math.max(selectionBox.start.y, selectionBox.end.y);
 
-            ctx.strokeStyle = theme.nodeSelected;
-            ctx.fillStyle = theme.nodeSelected + '20';
+            ctx.strokeStyle = '#f59e0b';
+            ctx.fillStyle = '#f59e0b' + '20';
             ctx.lineWidth = 2;
             ctx.setLineDash([5, 5]);
             ctx.fillRect(minX, minY, maxX - minX, maxY - minY);
@@ -63,9 +64,9 @@ export function useGraphDrawing(
 
         const isActiveSimulation = simulationState?.currentStateId === edge.from;
         const isSelectedEdge = selectedNodes.has(edge.from) && selectedNodes.has(edge.to);
-
-        ctx.strokeStyle = isActiveSimulation ? '#fbbf24' : (isSelectedEdge ? theme.nodeSelected : theme.edge);
+        ctx.strokeStyle = isActiveSimulation ? '#fbbf24' : (isSelectedEdge ? '#f59e0b' : theme.edge);
         ctx.lineWidth = isActiveSimulation ? 4 : (isSelectedEdge ? 3 : 2);
+
         ctx.fillStyle = theme.edgeLabel;
         ctx.font = '14px Inter, sans-serif';
         ctx.textAlign = 'center';

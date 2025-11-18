@@ -138,7 +138,7 @@ export function drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode, is
     }
 
     if (node.isAccepting) {
-        ctx.strokeStyle = isSelected ? theme.nodeSelected : (isSimulationActive ? '#f59e0b' : theme.nodeStroke);
+        ctx.strokeStyle = isSelected ? '#f59e0b' : (isSimulationActive ? '#f59e0b' : theme.nodeStroke);
         ctx.lineWidth = isSimulationActive ? 4 : 2;
         ctx.beginPath();
         ctx.arc(node.x, node.y, ACCEPTING_RADIUS, 0, Math.PI * 2);
@@ -153,7 +153,7 @@ export function drawNode(ctx, node, { isSelected, isHovered, isEdgeStartNode, is
     }
 
     ctx.fillStyle = isSimulationActive ? simFill : (isEdgeStartNode ? '#fcd34d' : (isHovered ? theme.nodeHover : theme.node));
-    ctx.strokeStyle = isSelected ? theme.nodeSelected : (isSimulationActive ? simColor : theme.nodeStroke);
+    ctx.strokeStyle = isSelected ? '#f59e0b' : (isSimulationActive ? simColor : theme.nodeStroke);
     ctx.lineWidth = isSelected ? 4 : (isSimulationActive ? 4 : 2);
     ctx.beginPath();
     ctx.arc(node.x, node.y, NODE_RADIUS, 0, Math.PI * 2);

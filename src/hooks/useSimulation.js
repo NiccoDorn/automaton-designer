@@ -25,11 +25,10 @@ export function useSimulation(nodes, edges) {
 
     const simulateStep = useCallback((stateId, charIndex) => {
         if (charIndex >= inputWord.length) {
-            // First, highlight the final state
+
             setCurrentStateId(stateId);
             setProcessedChars(charIndex);
 
-            // Then after a delay, show the result
             timeoutRef.current = setTimeout(() => {
                 const currentNode = nodes.find(n => n.id === stateId);
                 const success = currentNode?.isAccepting || false;
