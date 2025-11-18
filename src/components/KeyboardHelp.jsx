@@ -32,7 +32,7 @@ export function KeyboardHelp({ theme, isVisible, isExpanded }) {
             backgroundColor: theme.panel,
             borderColor: theme.border,
             border: '1px solid',
-            maxWidth: '300px'
+            maxWidth: '320px'
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}

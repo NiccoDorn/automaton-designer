@@ -40,12 +40,12 @@ export function PropertiesPanel({
                 pointerEvents: isSimulating ? 'none' : 'auto'
             }}
         >
-            <h3
+            <h4
                 className="font-bold text-xl mb-6 border-b pb-2"
                 style={{ borderColor: theme.border, textAlign: 'center' }}
             >
                 Automaton Panel
-            </h3>
+            </h4>
 
             <CollapsibleSection
                 title="Properties"
