@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Keyboard, ChevronDown, ChevronUp } from 'lucide-react';
 
-export function KeyboardHelp({ theme, isVisible, isExpanded, setIsExpanded }) {
+export function KeyboardHelp({ theme, isVisible, isExpanded }) {
     const [isHovered, setIsHovered] = useState(false);
 
     const shortcuts = [
