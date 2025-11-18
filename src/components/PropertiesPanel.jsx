@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Settings, Type, FlaskConical } from 'lucide-react';
 import { CollapsibleSection } from './CollapsibleSection';
 import { PropertiesSection } from './PropertiesSection';
@@ -22,6 +22,12 @@ export function PropertiesPanel({
     const [isPropertiesExpanded, setIsPropertiesExpanded] = useState(true);
     const [isGreekExpanded, setIsGreekExpanded] = useState(false);
     const [isAnalysisExpanded, setIsAnalysisExpanded] = useState(false);
+
+    useEffect(() => {
+        if (selectedNode && !isSimulating) {
+            setIsPropertiesExpanded(true);
+        }
+    }, [selectedNode, isSimulating]);
 
     return (
         <div

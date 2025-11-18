@@ -102,16 +102,21 @@ export function SimulationPanel({
                 </button>
             </div>
         ) : (
-            <div className="flex gap-2" style={{ minWidth: '200px' }}>
-                {isStepMode && (
-                    <button
-                        onClick={onStep}
-                        className="px-4 py-2 rounded-lg font-bold text-lg shadow-lg bg-blue-600 hover:bg-blue-700 text-white transition flex items-center gap-2"
-                        title="Next Step (S)"
-                    >
-                        Step
-                    </button>
-                )}
+            <div className="flex gap-2" style={{ minWidth: '200px', justifyContent: 'flex-end' }}>
+                <button
+                    onClick={onStep}
+                    className="px-4 py-2 rounded-lg font-bold text-lg shadow-lg bg-blue-600 hover:bg-blue-700 text-white transition flex items-center gap-2"
+                    title="Next Step (S)"
+                    style={{
+                        visibility: isStepMode ? 'visible' : 'hidden',
+                        width: isStepMode ? 'auto' : '0',
+                        padding: isStepMode ? '0.5rem 1rem' : '0',
+                        margin: isStepMode ? '0' : '0',
+                        overflow: 'hidden'
+                    }}
+                >
+                    Step
+                </button>
                 <button
                     onClick={onStop}
                     className="px-4 py-2 rounded-lg font-bold text-lg shadow-lg bg-red-500 hover:bg-red-600 text-white transition flex items-center gap-2"
