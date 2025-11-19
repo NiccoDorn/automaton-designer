@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { createNode, createEdge, exportGraph, importGraphFromFile, findNonOverlappingPosition } from '../utils/graphOperations';
 import { validateAutomatonData } from '../utils/validation';
+// import { detectDeadStates } from '../utils/automatonAlgorithms';
 
 export function useAutomatonOperations(nodes, edges, saveState, offset, canvasContainerRef) {
     const addNode = useCallback((x, y) => {
@@ -11,6 +12,18 @@ export function useAutomatonOperations(nodes, edges, saveState, offset, canvasCo
         saveState(newNodes, edges);
         return newNode.id;
     }, [nodes, edges, saveState, offset]);
+
+    /* // for now, no automated dead state dections
+    const runDeadStatesCheck = () => {
+        const result = detectDeadStates(nodes, edges);
+        setAnalysisResults({
+            type: 'dead',
+            ...result
+        });
+        if (onDeadStatesDetected) {
+            onDeadStatesDetected(result.dead);
+        }
+    };*/
 
     const addEdge = useCallback((from, to, label = 'ε', updateEdgeLabel) => {
         if (from === to) {

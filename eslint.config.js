@@ -34,21 +34,53 @@ export default defineConfig([
         destructuredArrayIgnorePattern: '^_'
       }],
       
-      // Security Rules
+      // Security - Code Injection
       'no-eval': 'error',
       'no-implied-eval': 'error',
       'no-new-func': 'error',
       'no-script-url': 'error',
       'no-with': 'error',
       
-      // React Security
-      'react/no-danger': 'warn',
+      // Security - DOM & XSS
+      'react/no-danger': 'error',
       'react/no-danger-with-children': 'error',
       'react/jsx-no-script-url': 'error',
       'react/jsx-no-target-blank': ['error', {
         allowReferrer: false,
         enforceDynamicLinks: 'always'
       }],
+      
+      // Security - Regex & ReDoS
+      'no-invalid-regexp': 'error',
+      'no-misleading-character-class': 'error',
+      'no-control-regex': 'error',
+      'no-regex-spaces': 'error',
+      
+      // Security - Resource Access
+      'no-restricted-globals': ['error', 
+        { name: 'event', message: 'Use local parameter instead' }
+      ],
+      'no-restricted-properties': ['error',
+        { object: 'window', property: 'localStorage', message: 'Validate data before storage' },
+        { object: 'window', property: 'sessionStorage', message: 'Validate data before storage' }
+      ],
+      
+      // Security - Prototype Pollution
+      'no-prototype-builtins': 'error',
+      'no-extend-native': 'error',
+      'no-iterator': 'error',
+      'no-proto': 'error',
+      
+      // Security - Timing & Race Conditions
+      'no-async-promise-executor': 'error',
+      'require-atomic-updates': 'error',
+      'no-await-in-loop': 'warn',
+      
+      // Security - Data Validation
+      'no-compare-neg-zero': 'error',
+      'no-unsafe-negation': 'error',
+      'use-isnan': 'error',
+      'valid-typeof': 'error',
       
       // Best Practices
       'no-console': ['warn', { allow: ['warn', 'error'] }],
@@ -58,15 +90,19 @@ export default defineConfig([
       'prefer-arrow-callback': 'warn',
       
       // Potential Bugs
-      'no-prototype-builtins': 'error',
-      'no-async-promise-executor': 'error',
-      'require-atomic-updates': 'error',
+      'no-fallthrough': 'error',
+      'no-empty-pattern': 'error',
+      'no-self-assign': 'error',
+      'no-self-compare': 'error',
+      'no-unmodified-loop-condition': 'error',
       
       // React Best Practices
       'react/jsx-no-duplicate-props': 'error',
       'react/jsx-key': ['error', { checkFragmentShorthand: true }],
       'react/no-array-index-key': 'warn',
-      'react/prop-types': 'off', // Turn on if you use prop-types
+      'react/no-children-prop': 'error',
+      'react/no-unescaped-entities': 'error',
+      'react/prop-types': 'off',
       
       // Code Quality
       'no-debugger': 'error',

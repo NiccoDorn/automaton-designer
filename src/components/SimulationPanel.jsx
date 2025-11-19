@@ -15,8 +15,7 @@ export function SimulationPanel({
         <div
             className="border-t flex items-center justify-between gap-4 px-6 py-3"
             style={{
-                // Change: Use theme.panel for background color
-                backgroundColor: theme.panel, 
+                backgroundColor: theme.panel,
                 borderColor: theme.border,
             }}
         >
