@@ -49,7 +49,7 @@ const THEMES = {
 };
 
 export function useTheme() {
-    const [theme, setTheme] = useState('light');
+    const [theme, setTheme] = useState('dark');
     const currentTheme = THEMES[theme];
     const cycleTheme = () => {
         const themeKeys = Object.keys(THEMES);
