@@ -184,3 +184,84 @@ export function checkDFACompleteness(nodes, edges) {
 
     return { isComplete, message, incompleteStates, alphabet };
 }
+
+export function checkAutomatonType(nodes, edges) {
+    const issues = [];
+
+    // Check if automaton has any states
+    if (nodes.length === 0) {
+        return {
+            type: 'INVALID',
+            isDFA: false,
+            isNFA: false,
+            message: 'Empty automaton',
+            issues: ['No states defined']
+        };
+    }
+
+    // Check for exactly one start state
+    const startStates = nodes.filter(n => n.isStart);
+    if (startStates.length === 0) {
+        issues.push('No start state defined');
+    } else if (startStates.length > 1) {
+        issues.push(`Multiple start states (${startStates.length})`);
+    }
+
+    // Check for epsilon transitions
+    const hasEpsilonTransitions = edges.some(edge => {
+        const symbols = edge.label.split(',').map(s => s.trim());
+        return symbols.some(s => s === 'ε' || s === 'epsilon' || s === '');
+    });
+
+    if (hasEpsilonTransitions) {
+        issues.push('Contains ε-transitions');
+    }
+
+    // Check for non-determinism (multiple transitions with same symbol from same state)
+    let hasNondeterminism = false;
+    for (const node of nodes) {
+        const outgoingEdges = edges.filter(e => e.from === node.id);
+        const symbolToTargets = new Map();
+
+        outgoingEdges.forEach(edge => {
+            const symbols = edge.label.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            symbols.forEach(symbol => {
+                if (!symbolToTargets.has(symbol)) {
+                    symbolToTargets.set(symbol, []);
+                }
+                symbolToTargets.get(symbol).push(edge.to);
+            });
+        });
+
+        for (const [symbol, targets] of symbolToTargets.entries()) {
+            if (targets.length > 1) {
+                hasNondeterminism = true;
+                issues.push(`Non-deterministic: state '${node.label}' has ${targets.length} transitions for symbol '${symbol}'`);
+            }
+        }
+    }
+
+    // Determine type
+    const isDFA = startStates.length === 1 && !hasEpsilonTransitions && !hasNondeterminism;
+    const isNFA = startStates.length > 0 && !isDFA;
+
+    let type, message;
+    if (startStates.length === 0) {
+        type = 'INVALID';
+        message = 'Invalid automaton: no start state';
+    } else if (isDFA) {
+        type = 'DFA';
+        message = 'Deterministic Finite Automaton';
+    } else {
+        type = 'NFA';
+        message = 'Non-deterministic Finite Automaton';
+    }
+
+    return {
+        type,
+        isDFA,
+        isNFA,
+        message,
+        issues
+    };
+}

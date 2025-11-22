@@ -14,7 +14,8 @@ export function useGraphDrawing(
     selectedNodes = new Set(),
     selectionBox = null,
     simulationState = null,
-    deadStates = new Set()
+    deadStates = new Set(),
+    zoomLevel = 1.0
     ) {
     const drawGraph = useCallback(() => {
         const canvas = canvasRef.current;
@@ -24,6 +25,7 @@ export function useGraphDrawing(
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         ctx.save();
+        ctx.scale(zoomLevel, zoomLevel);
         ctx.translate(offset.x, offset.y);
 
         if (selectionBox && selectionBox.start && selectionBox.end) {
@@ -96,7 +98,7 @@ export function useGraphDrawing(
         });
 
         ctx.restore();
-    }, [canvasRef, nodes, edges, selectedNode, hoveredNode, mode, edgeStart, theme, offset, selectedNodes, selectionBox, simulationState, deadStates]);
+    }, [canvasRef, nodes, edges, selectedNode, hoveredNode, mode, edgeStart, theme, offset, selectedNodes, selectionBox, simulationState, deadStates, zoomLevel]);
 
     useEffect(() => {
         drawGraph();

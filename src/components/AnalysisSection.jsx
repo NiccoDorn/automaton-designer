@@ -4,7 +4,8 @@ import {
     checkLanguageEmptiness,
     detectUnreachableStates,
     detectDeadStates,
-    checkDFACompleteness
+    checkDFACompleteness,
+    checkAutomatonType
 } from '../utils/automatonAlgorithms';
 
 export function AnalysisSection({ nodes, edges, theme, isSimulating = false, onDeadStatesDetected }) {
@@ -45,6 +46,17 @@ export function AnalysisSection({ nodes, edges, theme, isSimulating = false, onD
         });
     };
 
+    const runTypeCheck = () => {
+        const result = checkAutomatonType(nodes, edges);
+        setAnalysisResults({
+            type: 'automatonType',
+            ...result
+        });
+    };
+
+    // Get current automaton type for display
+    const automatonType = checkAutomatonType(nodes, edges);
+
     const clearResults = () => {
         setAnalysisResults(null);
         if (onDeadStatesDetected) {
@@ -80,6 +92,14 @@ export function AnalysisSection({ nodes, edges, theme, isSimulating = false, onD
                 ) : (
                     <AlertCircle size={20} color="#f59e0b" />
                 );
+            case 'automatonType':
+                if (analysisResults.type === 'DFA') {
+                    return <CheckCircle size={20} color="#10b981" />;
+                } else if (analysisResults.type === 'NFA') {
+                    return <Info size={20} color="#3b82f6" />;
+                } else {
+                    return <AlertCircle size={20} color="#f59e0b" />;
+                }
             default:
                 return <Info size={20} color="#3b82f6" />;
         }
@@ -173,6 +193,31 @@ export function AnalysisSection({ nodes, edges, theme, isSimulating = false, onD
                     </div>
                 );
 
+            case 'automatonType':
+                if (analysisResults.issues.length === 0 && analysisResults.isDFA) return null;
+                return (
+                    <div
+                        className="mt-3 p-3 rounded text-sm space-y-2"
+                        style={{
+                            backgroundColor: theme.canvas,
+                            border: `1px solid ${theme.border}`
+                        }}
+                    >
+                        {analysisResults.issues.length > 0 && (
+                            <div>
+                                <p className="font-semibold" style={{ color: theme.text }}>
+                                    {analysisResults.isNFA ? 'NFA Properties:' : 'Issues:'}
+                                </p>
+                                <ul className="text-xs mt-1 space-y-1" style={{ color: theme.nodeStroke }}>
+                                    {analysisResults.issues.map((issue, idx) => (
+                                        <li key={idx}>• {issue}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                );
+
             default:
                 return null;
         }
@@ -180,7 +225,34 @@ export function AnalysisSection({ nodes, edges, theme, isSimulating = false, onD
 
     return (
         <div className="mt-3">
+            {/* Automaton Type Badge */}
+            <div
+                className="mb-3 px-3 py-2 rounded-lg text-sm font-semibold text-center"
+                style={{
+                    backgroundColor: automatonType.isDFA ? '#10b981' : automatonType.isNFA ? '#3b82f6' : '#f59e0b',
+                    color: '#ffffff'
+                }}
+            >
+                {automatonType.type === 'DFA' && 'DFA - Deterministic Finite Automaton'}
+                {automatonType.type === 'NFA' && 'NFA - Non-deterministic Finite Automaton'}
+                {automatonType.type === 'INVALID' && 'Invalid Automaton'}
+            </div>
+
             <div className="space-y-2">
+                <button
+                    onClick={runTypeCheck}
+                    disabled={isSimulating}
+                    className="w-full px-3 py-2 rounded-lg text-sm font-medium transition"
+                    style={{
+                        backgroundColor: theme.canvas,
+                        color: theme.text,
+                        border: `1px solid ${theme.border}`
+                    }}
+                    title="Show detailed automaton type information"
+                >
+                    Check Automaton Type
+                </button>
+
                 <button
                     onClick={runEmptinessCheck}
                     disabled={isSimulating}
