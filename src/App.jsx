@@ -21,6 +21,9 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useSimulation } from './hooks/useSimulation';
 import { INITIAL_NODES, INITIAL_EDGES } from './constants';
 import { captureCanvasRegion } from './utils/screenshotUtils';
+import { exportCanvasAsPNG, exportCanvasAsSVG } from './utils/graphOperations';
+import { generateLaTeXCode } from './utils/latexExport';
+import { LaTeXExportModal } from './components/LaTeXExportModal';
 
 export default function App() {
   const canvasRef = useRef(null);
@@ -28,6 +31,8 @@ export default function App() {
 
   const [deadStates, setDeadStates] = useState(new Set());
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
+  const [latexModalOpen, setLatexModalOpen] = useState(false);
+  const [latexCode, setLatexCode] = useState('');
 
   const { currentTheme, cycleTheme, themeName } = useTheme();
   const { offset, isPanning, startPan, updatePan, endPan, panByOffset } = useCanvasPan();
@@ -357,6 +362,34 @@ export default function App() {
     setEdgeStart(null);
   };
 
+  const handleExportJSON = () => {
+    if (isSimulating) return;
+    handleExport();
+  };
+
+  const handleExportPNG = () => {
+    if (isSimulating) return;
+    const canvas = canvasRef.current;
+    if (canvas) {
+      exportCanvasAsPNG(canvas);
+    }
+  };
+
+  const handleExportSVG = () => {
+    if (isSimulating) return;
+    const canvas = canvasRef.current;
+    if (canvas) {
+      exportCanvasAsSVG(canvas, nodes, edges, currentTheme);
+    }
+  };
+
+  const handleExportLaTeX = () => {
+    if (isSimulating) return;
+    const latex = generateLaTeXCode(nodes, edges);
+    setLatexCode(latex);
+    setLatexModalOpen(true);
+  };
+
   const handleMultiAddWrapper = (count) => {
     handleMultiAdd(count);
   };
@@ -420,7 +453,10 @@ export default function App() {
       <Toolbar
         mode={mode}
         onModeChange={handleModeChange}
-        onExport={handleExport}
+        onExportJSON={handleExportJSON}
+        onExportPNG={handleExportPNG}
+        onExportSVG={handleExportSVG}
+        onExportLaTeX={handleExportLaTeX}
         onImport={handleImportWrapper}
         onUndo={handleUndo}
         onRedo={handleRedo}
@@ -439,6 +475,13 @@ export default function App() {
         theme={currentTheme}
         isOpen={isShortcutsModalOpen}
         onClose={() => setIsShortcutsModalOpen(false)}
+      />
+
+      <LaTeXExportModal
+        isOpen={latexModalOpen}
+        onClose={() => setLatexModalOpen(false)}
+        latexCode={latexCode}
+        theme={currentTheme}
       />
 
       <div className="flex-1 flex flex-col min-h-0">
