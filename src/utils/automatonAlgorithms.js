@@ -265,3 +265,11 @@ export function checkAutomatonType(nodes, edges) {
         issues
     };
 }
+
+export function complementDFA(nodes) {
+    // Simply invert all accepting states
+    return nodes.map(node => ({
+        ...node,
+        isAccepting: !node.isAccepting
+    }));
+}
