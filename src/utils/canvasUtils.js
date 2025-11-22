@@ -1,10 +1,10 @@
 import { NODE_RADIUS } from '../constants';
 
-export function getCanvasCoords(canvas, e) {
+export function getCanvasCoords(canvas, e, zoomLevel = 1.0) {
     const rect = canvas.getBoundingClientRect();
     return {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
+        x: (e.clientX - rect.left) / zoomLevel,
+        y: (e.clientY - rect.top) / zoomLevel,
     };
 }
 

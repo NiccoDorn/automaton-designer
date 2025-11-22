@@ -21,8 +21,7 @@ export function useKeyboardShortcuts({
     setSelectedNode,
     toggleAccepting,
     setStartState,
-    setShortcutsVisible,
-    setShortcutsExpanded
+    setIsShortcutsModalOpen
 }) {
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -94,9 +93,9 @@ export function useKeyboardShortcuts({
                 }
             }
 
-            if (e.key === 't' || e.key === 'T') {
+            if (e.key === 'h' || e.key === 'H') {
                 e.preventDefault();
-                setShortcutsExpanded(prev => !prev);
+                setIsShortcutsModalOpen(prev => !prev);
             }
 
             if (e.key === 'w' || e.key === 'W') {
@@ -124,6 +123,6 @@ export function useKeyboardShortcuts({
         edgeLabelDialog, multiAddDialog, closeEdgeLabelDialog, closeMultiAddDialog,
         deleteSelectedNodes, mode, setMode, setEdgeStart, openMultiAddDialog,
         selectedNode, edges, setSelectedNodes, handleUndo, handleRedo, panByOffset,
-        isStepMode, nodes, setSelectedNode, toggleAccepting, setStartState, setShortcutsVisible, setShortcutsExpanded
+        isStepMode, nodes, setSelectedNode, toggleAccepting, setStartState, setIsShortcutsModalOpen
     ]);
 }

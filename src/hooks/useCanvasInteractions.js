@@ -25,11 +25,12 @@ export function useCanvasInteractions({
     startPan,
     updatePan,
     setHoveredNode,
+    zoomLevel = 1.0,
 }) {
     const handleCanvasClick = useCallback((e) => {
         if (isPanning || isSelecting) return;
 
-        const coords = getCanvasCoords(canvasRef.current, e);
+        const coords = getCanvasCoords(canvasRef.current, e, zoomLevel);
         const adjustedCoords = { x: coords.x - offset.x, y: coords.y - offset.y };
         const clickedNode = findNode(nodes, adjustedCoords.x, adjustedCoords.y);
 
@@ -51,14 +52,27 @@ export function useCanvasInteractions({
             }
         } else if (mode === 'select') {
             if (clickedNode) {
-                setSelectedNode(clickedNode.id);
-                setSelectedNodes(new Set());
+                if (e.shiftKey) {
+                    // Shift+Click: Toggle node in multi-selection
+                    const newSelected = new Set(selectedNodes);
+                    if (newSelected.has(clickedNode.id)) {
+                        newSelected.delete(clickedNode.id);
+                    } else {
+                        newSelected.add(clickedNode.id);
+                    }
+                    setSelectedNodes(newSelected);
+                    setSelectedNode(newSelected.size === 1 ? Array.from(newSelected)[0] : null);
+                } else {
+                    // Normal click: Select only this node
+                    setSelectedNode(clickedNode.id);
+                    setSelectedNodes(new Set());
+                }
             } else {
                 setSelectedNode(null);
                 setSelectedNodes(new Set());
             }
         }
-    }, [isPanning, isSelecting, canvasRef, nodes, offset, mode, edgeStart, addNode, openEdgeLabelDialog, setEdgeStart, setSelectedNode, setSelectedNodes]);
+    }, [isPanning, isSelecting, canvasRef, nodes, offset, mode, edgeStart, addNode, openEdgeLabelDialog, setEdgeStart, setSelectedNode, setSelectedNodes, zoomLevel]);
 
     const handleCanvasRightClick = useCallback((e) => {
         e.preventDefault();
@@ -66,7 +80,7 @@ export function useCanvasInteractions({
     }, [mode, edgeStart, setEdgeStart]);
 
     const handleMouseDown = useCallback((e) => {
-        const coords = getCanvasCoords(canvasRef.current, e);
+        const coords = getCanvasCoords(canvasRef.current, e, zoomLevel);
         
         if (e.button === 1 || e.ctrlKey) {
             startPan(coords.x, coords.y);
@@ -94,10 +108,10 @@ export function useCanvasInteractions({
                 setSelectionEnd({ x: adjustedCoords.x, y: adjustedCoords.y });
             }
         }
-    }, [canvasRef, nodes, offset, mode, selectedNodes, isPanning, startPan, setDraggingNode, setIsSelecting, setSelectionStart, setSelectionEnd, setIsDraggingSelection, setDragOffset]);
+    }, [canvasRef, nodes, offset, mode, selectedNodes, isPanning, startPan, setDraggingNode, setIsSelecting, setSelectionStart, setSelectionEnd, setIsDraggingSelection, setDragOffset, zoomLevel]);
 
     const handleMouseMove = useCallback((e) => {
-        const coords = getCanvasCoords(canvasRef.current, e);
+        const coords = getCanvasCoords(canvasRef.current, e, zoomLevel);
         const adjustedCoords = { x: coords.x - offset.x, y: coords.y - offset.y };
         const hovNode = findNode(nodes, adjustedCoords.x, adjustedCoords.y);
         setHoveredNode(hovNode ? hovNode.id : null);
@@ -105,7 +119,7 @@ export function useCanvasInteractions({
         if (isPanning) { updatePan(coords.x, coords.y);
         } else if (isSelecting && selectionStart) { setSelectionEnd({ x: adjustedCoords.x, y: adjustedCoords.y }); }
 
-    }, [canvasRef, nodes, offset, isPanning, isSelecting, selectionStart, updatePan, setHoveredNode, setSelectionEnd]);
+    }, [canvasRef, nodes, offset, isPanning, isSelecting, selectionStart, updatePan, setHoveredNode, setSelectionEnd, zoomLevel]);
 
     const handleMouseUp = useCallback((nodes, selectionStart, selectionEnd, isSelecting, setSelectedNodes, setSelectedNode, setDraggingNode, setIsSelecting, setIsDraggingSelection, setSelectionStart, setSelectionEnd, endPan) => {
         if (isSelecting && selectionStart && selectionEnd) {

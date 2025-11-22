@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { MousePointer, Plus, Download, Upload, Undo, Redo, Palette, Trash2, SquarePlus, Share2 } from 'lucide-react';
+import { MousePointer, Plus, Download, Upload, Undo, Redo, Palette, Trash2, SquarePlus, Share2, Keyboard } from 'lucide-react';
 
 export function Toolbar({
     mode,
@@ -15,6 +15,7 @@ export function Toolbar({
     onThemeToggle,
     onClearCanvas,
     onMultiAdd,
+    onKeyboardShortcuts,
     isSimulating = false
     }) {
     const modes = [
@@ -127,6 +128,20 @@ export function Toolbar({
         </div>
 
         <div className="flex gap-2 ml-auto">
+            <button
+            onClick={onKeyboardShortcuts}
+            disabled={isSimulating}
+            className="px-4 py-2 rounded-lg font-medium shadow-sm transition duration-150 ease-in-out flex items-center gap-2"
+            style={{
+                backgroundColor: theme.node,
+                color: theme.text,
+                opacity: isSimulating ? 0.5 : 1,
+                cursor: isSimulating ? 'not-allowed' : 'pointer'
+            }}
+            title="Keyboard Shortcuts (H)"
+            >
+            <Keyboard size={18} />
+            </button>
             <button
             onClick={onThemeToggle}
             disabled={isSimulating}

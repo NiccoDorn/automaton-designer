@@ -3,7 +3,7 @@ import { Toolbar } from './components/Toolbar';
 import { GraphCanvas } from './components/GraphCanvas';
 import { PropertiesPanel } from './components/PropertiesPanel';
 import { EdgeLabelDialog } from './components/EdgeLabelDialog';
-import { KeyboardHelp } from './components/KeyboardHelp';
+import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { MultiAddDialog } from './components/MultiAddDialog';
 import { SimulationPanel } from './components/SimulationPanel';
 import { SimulationResultOverlay } from './components/SimulationResultOverlay';
@@ -12,6 +12,7 @@ import { useCanvasResize } from './hooks/useCanvasResize';
 import { useHistory } from './hooks/useHistory';
 import { useTheme } from './hooks/useTheme';
 import { useCanvasPan } from './hooks/useCanvasPan';
+import { useCanvasZoom } from './hooks/useCanvasZoom';
 import { useAutomatonState } from './hooks/useAutomatonState';
 import { useDialogs } from './hooks/useDialogs';
 import { useAutomatonOperations } from './hooks/useAutomatonOperations';
@@ -25,11 +26,11 @@ export default function App() {
   const canvasContainerRef = useRef(null);
 
   const [deadStates, setDeadStates] = useState(new Set());
-  const [shortcutsVisible, setShortcutsVisible] = useState(true);
-  const [shortcutsExpanded, setShortcutsExpanded] = useState(false);
+  const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
 
   const { currentTheme, cycleTheme, themeName } = useTheme();
   const { offset, isPanning, startPan, updatePan, endPan, panByOffset } = useCanvasPan();
+  const { zoomLevel } = useCanvasZoom(canvasRef);
 
   const {
     currentState,
@@ -181,7 +182,8 @@ export default function App() {
     endPan,
     setHoveredNode,
     saveState,
-    edges
+    edges,
+    zoomLevel
   });
 
   const handleMouseMove = useCallback((e) => {
@@ -273,8 +275,7 @@ export default function App() {
     setSelectedNode,
     toggleAccepting,
     setStartState,
-    setShortcutsVisible,
-    setShortcutsExpanded
+    setIsShortcutsModalOpen
   });
 
   useEffect(() => {
@@ -377,7 +378,8 @@ export default function App() {
     selectedNodes,
     isSelecting ? { start: selectionStart, end: selectionEnd } : null,
     isSimulating ? { currentStateId } : null,
-    deadStates
+    deadStates,
+    zoomLevel
   );
   
   useCanvasResize(canvasRef, canvasContainerRef, drawGraph);
@@ -417,10 +419,15 @@ export default function App() {
         onThemeToggle={cycleTheme}
         onClearCanvas={handleClearCanvasWrapper}
         onMultiAdd={openMultiAddDialog}
+        onKeyboardShortcuts={() => setIsShortcutsModalOpen(true)}
         isSimulating={isSimulating}
       />
 
-      <KeyboardHelp theme={currentTheme} isVisible={shortcutsVisible} isExpanded={shortcutsExpanded} setIsExpanded={setShortcutsExpanded} />
+      <KeyboardShortcutsModal
+        theme={currentTheme}
+        isOpen={isShortcutsModalOpen}
+        onClose={() => setIsShortcutsModalOpen(false)}
+      />
 
       <div className="flex-1 flex flex-col min-h-0">
         <div className="flex flex-1 min-h-0">

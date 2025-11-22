@@ -26,6 +26,23 @@ export function useAutomatonOperations(nodes, edges, saveState, offset, canvasCo
     };*/
 
     const addEdge = useCallback((from, to, label = 'ε', updateEdgeLabel) => {
+        // Normalize the new label
+        const newSymbols = label.split(',').map(s => s.trim()).filter(s => s.length > 0);
+
+        // Check for duplicate transitions
+        const existingEdges = edges.filter(e => e.from === from && e.to === to);
+        for (const edge of existingEdges) {
+            const existingSymbols = edge.label.split(',').map(s => s.trim());
+            for (const newSymbol of newSymbols) {
+                if (existingSymbols.includes(newSymbol)) {
+                    // Duplicate transition detected - ignore
+                    console.log(`Duplicate transition: ${newSymbol} from state ${from} to ${to} already exists`);
+                    return;
+                }
+            }
+        }
+
+        // Handle self-loops by appending to existing edge
         if (from === to) {
             const existingSelfLoop = edges.find(e => e.from === from && e.to === to);
             if (existingSelfLoop) {
@@ -34,7 +51,7 @@ export function useAutomatonOperations(nodes, edges, saveState, offset, canvasCo
                 return;
             }
         }
-        
+
         const newEdge = createEdge(edges, from, to, label);
         const newEdges = [...edges, newEdge];
         saveState(nodes, newEdges);
