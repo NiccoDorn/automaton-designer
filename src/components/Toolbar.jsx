@@ -1,10 +1,14 @@
 /* eslint-disable no-unused-vars */
 import { MousePointer, Plus, Download, Upload, Undo, Redo, Palette, Trash2, SquarePlus, Share2, Keyboard } from 'lucide-react';
+import { ExportDropdown } from './ExportDropdown';
 
 export function Toolbar({
     mode,
     onModeChange,
-    onExport,
+    onExportJSON,
+    onExportPNG,
+    onExportSVG,
+    onExportLaTeX,
     onImport,
     onUndo,
     onRedo,
@@ -156,18 +160,14 @@ export function Toolbar({
             >
             <Palette size={18} /> {themeName}
             </button>
-            <button
-            onClick={onExport}
-            disabled={isSimulating}
-            className="px-4 py-2 rounded-lg text-white font-medium shadow-md transition duration-150 ease-in-out flex items-center gap-2"
-            style={{ 
-                backgroundColor: '#10b981',
-                opacity: isSimulating ? 0.5 : 1,
-                cursor: isSimulating ? 'not-allowed' : 'pointer'
-            }}
-            >
-            <Download size={18} /> Export
-            </button>
+            <ExportDropdown
+                onExportJSON={onExportJSON}
+                onExportPNG={onExportPNG}
+                onExportSVG={onExportSVG}
+                onExportLaTeX={onExportLaTeX}
+                disabled={isSimulating}
+                theme={theme}
+            />
             <label
             className={`px-4 py-2 rounded-lg text-white font-medium shadow-md transition duration-150 ease-in-out flex items-center gap-2 ${isSimulating ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
             style={{ backgroundColor: '#a855f7' }}
