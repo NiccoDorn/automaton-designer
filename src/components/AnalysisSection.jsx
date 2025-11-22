@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertCircle, CheckCircle, Info } from 'lucide-react';
+import { AlertCircle, CheckCircle, Info, Copy } from 'lucide-react';
 import {
     checkLanguageEmptiness,
     detectUnreachableStates,
@@ -7,9 +7,12 @@ import {
     checkDFACompleteness,
     checkAutomatonType
 } from '../utils/automatonAlgorithms';
+import { convertAutomatonToRegex } from '../utils/automatonToRegex';
 
 export function AnalysisSection({ nodes, edges, theme, isSimulating = false, onDeadStatesDetected }) {
     const [analysisResults, setAnalysisResults] = useState(null);
+    const [regexResult, setRegexResult] = useState(null);
+    const [regexCopied, setRegexCopied] = useState(false);
 
     const runEmptinessCheck = () => {
         const result = checkLanguageEmptiness(nodes, edges);
@@ -52,6 +55,24 @@ export function AnalysisSection({ nodes, edges, theme, isSimulating = false, onD
             type: 'automatonType',
             ...result
         });
+    };
+
+    const runRegexConversion = () => {
+        try {
+            const result = convertAutomatonToRegex(nodes, edges);
+            setRegexResult(result.regex);
+        } catch (error) {
+            setRegexResult(`Error: ${error.message}`);
+        }
+    };
+
+    const copyRegexToClipboard = () => {
+        if (regexResult) {
+            navigator.clipboard.writeText(regexResult).then(() => {
+                setRegexCopied(true);
+                setTimeout(() => setRegexCopied(false), 2000);
+            });
+        }
     };
 
     // Get current automaton type for display
@@ -308,7 +329,56 @@ export function AnalysisSection({ nodes, edges, theme, isSimulating = false, onD
                 >
                     Check DFA Completeness
                 </button>
+
+                <button
+                    onClick={runRegexConversion}
+                    disabled={isSimulating}
+                    className="w-full px-3 py-2 rounded-lg text-sm font-medium transition"
+                    style={{
+                        backgroundColor: theme.canvas,
+                        color: theme.text,
+                        border: `1px solid ${theme.border}`
+                    }}
+                    title="Convert automaton to regular expression"
+                >
+                    Compute Regex
+                </button>
             </div>
+
+            {/* Regex Display */}
+            {regexResult && (
+                <div className="mt-4">
+                    <div className="flex items-center justify-between mb-2">
+                        <h4
+                            className="font-semibold text-sm"
+                            style={{ color: theme.text }}
+                        >
+                            Regular Expression:
+                        </h4>
+                        <button
+                            onClick={copyRegexToClipboard}
+                            className="text-xs px-2 py-1 rounded flex items-center gap-1"
+                            style={{
+                                color: regexCopied ? '#10b981' : theme.nodeStroke,
+                                backgroundColor: theme.canvas
+                            }}
+                        >
+                            <Copy size={14} />
+                            {regexCopied ? 'Copied!' : 'Copy'}
+                        </button>
+                    </div>
+                    <div
+                        className="p-3 rounded-lg font-mono text-lg break-all"
+                        style={{
+                            backgroundColor: theme.node,
+                            border: `2px solid ${theme.border}`,
+                            color: theme.text
+                        }}
+                    >
+                        {regexResult}
+                    </div>
+                </div>
+            )}
 
             {analysisResults && (
                 <div className="mt-4">
