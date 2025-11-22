@@ -25,6 +25,7 @@ import { exportCanvasAsPNG, exportCanvasAsSVG } from './utils/graphOperations';
 import { generateLaTeXCode } from './utils/latexExport';
 import { LaTeXExportModal } from './components/LaTeXExportModal';
 import { RegexInputModal } from './components/RegexInputModal';
+import { TransformationStepsModal } from './components/TransformationStepsModal';
 import { parseRegex } from './utils/regexParser';
 import { regexToNFA, nfaToAutomatonFormat } from './utils/thompsonsConstruction';
 import { complementDFA } from './utils/automatonAlgorithms';
@@ -40,6 +41,9 @@ export default function App() {
   const [latexModalOpen, setLatexModalOpen] = useState(false);
   const [latexCode, setLatexCode] = useState('');
   const [regexModalOpen, setRegexModalOpen] = useState(false);
+  const [transformationStepsOpen, setTransformationStepsOpen] = useState(false);
+  const [transformationResult, setTransformationResult] = useState(null);
+  const [transformationType, setTransformationType] = useState(null);
 
   const { currentTheme, cycleTheme, themeName } = useTheme();
   const { offset, isPanning, startPan, updatePan, endPan, panByOffset } = useCanvasPan();
@@ -409,27 +413,39 @@ export default function App() {
     try {
       const result = minimizeDFA(nodes, edges);
 
-      // Replace current automaton with minimized DFA
-      saveState(result.nodes, result.edges);
-
-      // Clear selection
-      setSelectedNode(null);
-      setSelectedNodes(new Set());
-
-      // Show success message
-      console.log(`DFA Minimized: ${result.originalStateCount} → ${result.minimizedStateCount} states`);
+      // Show transformation steps modal
+      setTransformationResult(result);
+      setTransformationType('minimize');
+      setTransformationStepsOpen(true);
     } catch (error) {
       console.error('DFA Minimization failed:', error);
       setErrorMessage(`Failed to minimize DFA: ${error.message}`);
     }
-  }, [isSimulating, nodes, edges, saveState, setSelectedNode, setSelectedNodes, setErrorMessage]);
+  }, [isSimulating, nodes, edges, setErrorMessage]);
 
   const handleConvertNFAtoDFA = useCallback(() => {
     if (isSimulating) return;
     try {
       const result = convertNFAtoDFA(nodes, edges);
 
-      // Replace current automaton with DFA
+      // Show transformation steps modal
+      setTransformationResult(result);
+      setTransformationType('nfaToDfa');
+      setTransformationStepsOpen(true);
+    } catch (error) {
+      console.error('NFA to DFA conversion failed:', error);
+      setErrorMessage(`Failed to convert NFA to DFA: ${error.message}`);
+    }
+  }, [isSimulating, nodes, edges, setErrorMessage]);
+
+  const handleRegexToAutomaton = useCallback(() => {
+    if (isSimulating) return;
+    setRegexModalOpen(true);
+  }, [isSimulating]);
+
+  const handleApplyTransformation = useCallback((result) => {
+    if (result.nodes && result.edges) {
+      // Apply the transformation result
       saveState(result.nodes, result.edges);
 
       // Clear selection
@@ -437,17 +453,9 @@ export default function App() {
       setSelectedNodes(new Set());
 
       // Show success message
-      console.log(`NFA → DFA Conversion: ${result.nfaStateCount} NFA states → ${result.dfaStateCount} DFA states`);
-    } catch (error) {
-      console.error('NFA to DFA conversion failed:', error);
-      setErrorMessage(`Failed to convert NFA to DFA: ${error.message}`);
+      console.log('Transformation applied successfully!');
     }
-  }, [isSimulating, nodes, edges, saveState, setSelectedNode, setSelectedNodes, setErrorMessage]);
-
-  const handleRegexToAutomaton = useCallback(() => {
-    if (isSimulating) return;
-    setRegexModalOpen(true);
-  }, [isSimulating]);
+  }, [saveState, setSelectedNode, setSelectedNodes]);
 
   const handleRegexSubmit = useCallback((regexString) => {
     try {
@@ -570,6 +578,15 @@ export default function App() {
         isOpen={regexModalOpen}
         onClose={() => setRegexModalOpen(false)}
         onSubmit={handleRegexSubmit}
+        theme={currentTheme}
+      />
+
+      <TransformationStepsModal
+        isOpen={transformationStepsOpen}
+        onClose={() => setTransformationStepsOpen(false)}
+        onApply={handleApplyTransformation}
+        transformationResult={transformationResult}
+        transformationType={transformationType}
         theme={currentTheme}
       />
 
