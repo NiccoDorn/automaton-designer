@@ -31,6 +31,89 @@ export function exportGraph(nodes, edges) {
     URL.revokeObjectURL(url);
 }
 
+export function exportCanvasAsPNG(canvas, filename = 'automaton.png') {
+    canvas.toBlob((blob) => {
+        if (!blob) {
+            console.error('Failed to create PNG');
+            return;
+        }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    }, 'image/png');
+}
+
+export function exportCanvasAsSVG(canvas, nodes, edges, theme, filename = 'automaton.svg') {
+    // Create SVG representation
+    const width = canvas.width;
+    const height = canvas.height;
+
+    let svgContent = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  <rect width="100%" height="100%" fill="${theme.canvas}"/>
+  <g id="automaton">
+`;
+
+    // Draw edges
+    edges.forEach(edge => {
+        const fromNode = nodes.find(n => n.id === edge.from);
+        const toNode = nodes.find(n => n.id === edge.to);
+        if (!fromNode || !toNode) return;
+
+        if (fromNode.id === toNode.id) {
+            // Self-loop
+            const loopRadius = 30;
+            svgContent += `    <path d="M ${fromNode.x},${fromNode.y - 25} Q ${fromNode.x},${fromNode.y - 80} ${fromNode.x + 40},${fromNode.y - 25}"
+              stroke="${theme.nodeStroke}" fill="none" stroke-width="2"/>
+    <text x="${fromNode.x}" y="${fromNode.y - 85}" fill="${theme.text}" font-size="14" text-anchor="middle">${edge.label}</text>
+`;
+        } else {
+            // Regular edge
+            svgContent += `    <line x1="${fromNode.x}" y1="${fromNode.y}" x2="${toNode.x}" y2="${toNode.y}"
+              stroke="${theme.nodeStroke}" stroke-width="2"/>
+    <text x="${(fromNode.x + toNode.x) / 2}" y="${(fromNode.y + toNode.y) / 2 - 5}" fill="${theme.text}" font-size="14" text-anchor="middle">${edge.label}</text>
+`;
+        }
+    });
+
+    // Draw nodes
+    nodes.forEach(node => {
+        // Accepting state (double circle)
+        if (node.isAccepting) {
+            svgContent += `    <circle cx="${node.x}" cy="${node.y}" r="30" fill="none" stroke="${theme.nodeStroke}" stroke-width="2"/>
+`;
+        }
+        // Main circle
+        svgContent += `    <circle cx="${node.x}" cy="${node.y}" r="25" fill="${theme.node}" stroke="${theme.nodeStroke}" stroke-width="2"/>
+    <text x="${node.x}" y="${node.y + 5}" fill="${theme.text}" font-size="16" font-weight="bold" text-anchor="middle">${node.label}</text>
+`;
+        // Start state arrow
+        if (node.isStart) {
+            svgContent += `    <path d="M ${node.x - 40},${node.y} L ${node.x - 25},${node.y}" stroke="${theme.nodeStroke}" stroke-width="2" marker-end="url(#arrowhead)"/>
+`;
+        }
+    });
+
+    svgContent += `  </g>
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="${theme.nodeStroke}"/>
+    </marker>
+  </defs>
+</svg>`;
+
+    const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
 export function importGraphFromFile(file, onSuccess, onError) {
     const reader = new FileReader();
     reader.onload = (event) => {
