@@ -24,6 +24,12 @@ import { captureCanvasRegion } from './utils/screenshotUtils';
 import { exportCanvasAsPNG, exportCanvasAsSVG } from './utils/graphOperations';
 import { generateLaTeXCode } from './utils/latexExport';
 import { LaTeXExportModal } from './components/LaTeXExportModal';
+import { RegexInputModal } from './components/RegexInputModal';
+import { parseRegex } from './utils/regexParser';
+import { regexToNFA, nfaToAutomatonFormat } from './utils/thompsonsConstruction';
+import { complementDFA } from './utils/automatonAlgorithms';
+import { minimizeDFA } from './utils/dfaMinimization';
+import { convertNFAtoDFA } from './utils/nfaToDfa';
 
 export default function App() {
   const canvasRef = useRef(null);
@@ -33,6 +39,7 @@ export default function App() {
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
   const [latexModalOpen, setLatexModalOpen] = useState(false);
   const [latexCode, setLatexCode] = useState('');
+  const [regexModalOpen, setRegexModalOpen] = useState(false);
 
   const { currentTheme, cycleTheme, themeName } = useTheme();
   const { offset, isPanning, startPan, updatePan, endPan, panByOffset } = useCanvasPan();
@@ -390,6 +397,81 @@ export default function App() {
     setLatexModalOpen(true);
   };
 
+  // Construction handlers
+  const handleComplementDFA = useCallback(() => {
+    if (isSimulating) return;
+    const complementedNodes = complementDFA(nodes);
+    saveState(complementedNodes, edges);
+  }, [isSimulating, nodes, edges, saveState]);
+
+  const handleMinimizeDFA = useCallback(() => {
+    if (isSimulating) return;
+    try {
+      const result = minimizeDFA(nodes, edges);
+
+      // Replace current automaton with minimized DFA
+      saveState(result.nodes, result.edges);
+
+      // Clear selection
+      setSelectedNode(null);
+      setSelectedNodes(new Set());
+
+      // Show success message
+      console.log(`DFA Minimized: ${result.originalStateCount} → ${result.minimizedStateCount} states`);
+    } catch (error) {
+      console.error('DFA Minimization failed:', error);
+      setErrorMessage(`Failed to minimize DFA: ${error.message}`);
+    }
+  }, [isSimulating, nodes, edges, saveState, setSelectedNode, setSelectedNodes, setErrorMessage]);
+
+  const handleConvertNFAtoDFA = useCallback(() => {
+    if (isSimulating) return;
+    try {
+      const result = convertNFAtoDFA(nodes, edges);
+
+      // Replace current automaton with DFA
+      saveState(result.nodes, result.edges);
+
+      // Clear selection
+      setSelectedNode(null);
+      setSelectedNodes(new Set());
+
+      // Show success message
+      console.log(`NFA → DFA Conversion: ${result.nfaStateCount} NFA states → ${result.dfaStateCount} DFA states`);
+    } catch (error) {
+      console.error('NFA to DFA conversion failed:', error);
+      setErrorMessage(`Failed to convert NFA to DFA: ${error.message}`);
+    }
+  }, [isSimulating, nodes, edges, saveState, setSelectedNode, setSelectedNodes, setErrorMessage]);
+
+  const handleRegexToAutomaton = useCallback(() => {
+    if (isSimulating) return;
+    setRegexModalOpen(true);
+  }, [isSimulating]);
+
+  const handleRegexSubmit = useCallback((regexString) => {
+    try {
+      // Parse regex to postfix
+      const postfixTokens = parseRegex(regexString);
+
+      // Build NFA using Thompson's Construction
+      const nfa = regexToNFA(postfixTokens);
+
+      // Convert to automaton format
+      const { nodes: newNodes, edges: newEdges } = nfaToAutomatonFormat(nfa);
+
+      // Replace current automaton with the generated one
+      saveState(newNodes, newEdges);
+
+      // Clear selection
+      setSelectedNode(null);
+      setSelectedNodes(new Set());
+    } catch (error) {
+      console.error('Regex to Automaton conversion failed:', error);
+      setErrorMessage(`Failed to convert regex: ${error.message}`);
+    }
+  }, [saveState, setSelectedNode, setSelectedNodes, setErrorMessage]);
+
   const handleMultiAddWrapper = (count) => {
     handleMultiAdd(count);
   };
@@ -484,6 +566,13 @@ export default function App() {
         theme={currentTheme}
       />
 
+      <RegexInputModal
+        isOpen={regexModalOpen}
+        onClose={() => setRegexModalOpen(false)}
+        onSubmit={handleRegexSubmit}
+        theme={currentTheme}
+      />
+
       <div className="flex-1 flex flex-col min-h-0">
         <div className="flex flex-1 min-h-0">
           <div className="flex flex-col flex-1 min-h-0">
@@ -534,6 +623,10 @@ export default function App() {
             theme={currentTheme}
             isSimulating={isSimulating}
             onDeadStatesDetected={setDeadStates}
+            onComplementDFA={handleComplementDFA}
+            onMinimizeDFA={handleMinimizeDFA}
+            onConvertNFAtoDFA={handleConvertNFAtoDFA}
+            onRegexToAutomaton={handleRegexToAutomaton}
           />
         </div>
       </div>
