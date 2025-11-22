@@ -24,6 +24,13 @@ import { captureCanvasRegion } from './utils/screenshotUtils';
 import { exportCanvasAsPNG, exportCanvasAsSVG } from './utils/graphOperations';
 import { generateLaTeXCode } from './utils/latexExport';
 import { LaTeXExportModal } from './components/LaTeXExportModal';
+import { RegexInputModal } from './components/RegexInputModal';
+import { TransformationStepsModal } from './components/TransformationStepsModal';
+import { parseRegex } from './utils/regexParser';
+import { regexToNFA, nfaToAutomatonFormat } from './utils/thompsonsConstruction';
+import { complementDFA } from './utils/automatonAlgorithms';
+import { minimizeDFA } from './utils/dfaMinimization';
+import { convertNFAtoDFA } from './utils/nfaToDfa';
 
 export default function App() {
   const canvasRef = useRef(null);
@@ -33,6 +40,10 @@ export default function App() {
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState(false);
   const [latexModalOpen, setLatexModalOpen] = useState(false);
   const [latexCode, setLatexCode] = useState('');
+  const [regexModalOpen, setRegexModalOpen] = useState(false);
+  const [transformationStepsOpen, setTransformationStepsOpen] = useState(false);
+  const [transformationResult, setTransformationResult] = useState(null);
+  const [transformationType, setTransformationType] = useState(null);
 
   const { currentTheme, cycleTheme, themeName } = useTheme();
   const { offset, isPanning, startPan, updatePan, endPan, panByOffset } = useCanvasPan();
@@ -390,6 +401,85 @@ export default function App() {
     setLatexModalOpen(true);
   };
 
+  // Construction handlers
+  const handleComplementDFA = useCallback(() => {
+    if (isSimulating) return;
+    const complementedNodes = complementDFA(nodes);
+    saveState(complementedNodes, edges);
+  }, [isSimulating, nodes, edges, saveState]);
+
+  const handleMinimizeDFA = useCallback(() => {
+    if (isSimulating) return;
+    try {
+      const result = minimizeDFA(nodes, edges);
+
+      // Show transformation steps modal
+      setTransformationResult(result);
+      setTransformationType('minimize');
+      setTransformationStepsOpen(true);
+    } catch (error) {
+      console.error('DFA Minimization failed:', error);
+      setErrorMessage(`Failed to minimize DFA: ${error.message}`);
+    }
+  }, [isSimulating, nodes, edges, setErrorMessage]);
+
+  const handleConvertNFAtoDFA = useCallback(() => {
+    if (isSimulating) return;
+    try {
+      const result = convertNFAtoDFA(nodes, edges);
+
+      // Show transformation steps modal
+      setTransformationResult(result);
+      setTransformationType('nfaToDfa');
+      setTransformationStepsOpen(true);
+    } catch (error) {
+      console.error('NFA to DFA conversion failed:', error);
+      setErrorMessage(`Failed to convert NFA to DFA: ${error.message}`);
+    }
+  }, [isSimulating, nodes, edges, setErrorMessage]);
+
+  const handleRegexToAutomaton = useCallback(() => {
+    if (isSimulating) return;
+    setRegexModalOpen(true);
+  }, [isSimulating]);
+
+  const handleApplyTransformation = useCallback((result) => {
+    if (result.nodes && result.edges) {
+      // Apply the transformation result
+      saveState(result.nodes, result.edges);
+
+      // Clear selection
+      setSelectedNode(null);
+      setSelectedNodes(new Set());
+
+      // Show success message
+      console.log('Transformation applied successfully!');
+    }
+  }, [saveState, setSelectedNode, setSelectedNodes]);
+
+  const handleRegexSubmit = useCallback((regexString) => {
+    try {
+      // Parse regex to postfix
+      const postfixTokens = parseRegex(regexString);
+
+      // Build NFA using Thompson's Construction
+      const nfa = regexToNFA(postfixTokens);
+
+      // Convert to automaton format
+      const { nodes: newNodes, edges: newEdges } = nfaToAutomatonFormat(nfa);
+
+      // Replace current automaton with the generated one
+      saveState(newNodes, newEdges);
+
+      // Clear selection
+      setSelectedNode(null);
+      setSelectedNodes(new Set());
+    } catch (error) {
+      console.error('Regex to Automaton conversion failed:', error);
+      setErrorMessage(`Failed to convert regex: ${error.message}`);
+    }
+  }, [saveState, setSelectedNode, setSelectedNodes, setErrorMessage]);
+
   const handleMultiAddWrapper = (count) => {
     handleMultiAdd(count);
   };
@@ -484,6 +574,22 @@ export default function App() {
         theme={currentTheme}
       />
 
+      <RegexInputModal
+        isOpen={regexModalOpen}
+        onClose={() => setRegexModalOpen(false)}
+        onSubmit={handleRegexSubmit}
+        theme={currentTheme}
+      />
+
+      <TransformationStepsModal
+        isOpen={transformationStepsOpen}
+        onClose={() => setTransformationStepsOpen(false)}
+        onApply={handleApplyTransformation}
+        transformationResult={transformationResult}
+        transformationType={transformationType}
+        theme={currentTheme}
+      />
+
       <div className="flex-1 flex flex-col min-h-0">
         <div className="flex flex-1 min-h-0">
           <div className="flex flex-col flex-1 min-h-0">
@@ -534,6 +640,10 @@ export default function App() {
             theme={currentTheme}
             isSimulating={isSimulating}
             onDeadStatesDetected={setDeadStates}
+            onComplementDFA={handleComplementDFA}
+            onMinimizeDFA={handleMinimizeDFA}
+            onConvertNFAtoDFA={handleConvertNFAtoDFA}
+            onRegexToAutomaton={handleRegexToAutomaton}
           />
         </div>
       </div>

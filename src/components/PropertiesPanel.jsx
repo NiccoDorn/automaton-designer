@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Settings, Type, FlaskConical } from 'lucide-react';
+import { Settings, Type, FlaskConical, Shuffle } from 'lucide-react';
 import { CollapsibleSection } from './CollapsibleSection';
 import { PropertiesSection } from './PropertiesSection';
 import { GreekSymbolsSection } from './GreekSymbolsSection';
 import { AnalysisSection } from './AnalysisSection';
+import { ConstructionSection } from './ConstructionSection';
 
 export function PropertiesPanel({
     selectedNode,
@@ -17,11 +18,16 @@ export function PropertiesPanel({
     onDeleteEdge,
     theme,
     isSimulating = false,
-    onDeadStatesDetected
+    onDeadStatesDetected,
+    onComplementDFA,
+    onMinimizeDFA,
+    onConvertNFAtoDFA,
+    onRegexToAutomaton
 }) {
     const [isPropertiesExpanded, setIsPropertiesExpanded] = useState(true);
     const [isGreekExpanded, setIsGreekExpanded] = useState(false);
     const [isAnalysisExpanded, setIsAnalysisExpanded] = useState(false);
+    const [isConstructionExpanded, setIsConstructionExpanded] = useState(false);
 
     useEffect(() => {
         if (selectedNode && !isSimulating) {
@@ -98,6 +104,26 @@ export function PropertiesPanel({
                     theme={theme}
                     isSimulating={isSimulating}
                     onDeadStatesDetected={onDeadStatesDetected}
+                />
+            </CollapsibleSection>
+
+            <CollapsibleSection
+                title="Construction"
+                icon={Shuffle}
+                isExpanded={isConstructionExpanded}
+                onToggle={() => setIsConstructionExpanded(!isConstructionExpanded)}
+                theme={theme}
+                isDisabled={isSimulating}
+            >
+                <ConstructionSection
+                    nodes={nodes}
+                    edges={edges}
+                    theme={theme}
+                    isSimulating={isSimulating}
+                    onComplementDFA={onComplementDFA}
+                    onMinimizeDFA={onMinimizeDFA}
+                    onConvertNFAtoDFA={onConvertNFAtoDFA}
+                    onRegexToAutomaton={onRegexToAutomaton}
                 />
             </CollapsibleSection>
         </div>
