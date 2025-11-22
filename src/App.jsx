@@ -20,6 +20,7 @@ import { useCanvasInteractions } from './hooks/useCanvasInteractions';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useSimulation } from './hooks/useSimulation';
 import { INITIAL_NODES, INITIAL_EDGES } from './constants';
+import { captureCanvasRegion } from './utils/screenshotUtils';
 
 export default function App() {
   const canvasRef = useRef(null);
@@ -235,15 +236,26 @@ export default function App() {
       const minY = Math.min(selectionStart.y, selectionEnd.y);
       const maxY = Math.max(selectionStart.y, selectionEnd.y);
 
-      const selected = new Set();
-      nodes.forEach(node => {
-        if (node.x >= minX && node.x <= maxX && node.y >= minY && node.y <= maxY) {
-          selected.add(node.id);
+      if (mode === 'screenshot') {
+        // Screenshot mode: capture canvas region
+        const canvas = canvasRef.current;
+        if (canvas && maxX > minX && maxY > minY) {
+          captureCanvasRegion(canvas, { minX, minY, maxX, maxY });
         }
-      });
+        // Reset to select mode
+        setMode('select');
+      } else {
+        // Select mode: select nodes in region
+        const selected = new Set();
+        nodes.forEach(node => {
+          if (node.x >= minX && node.x <= maxX && node.y >= minY && node.y <= maxY) {
+            selected.add(node.id);
+          }
+        });
 
-      setSelectedNodes(selected);
-      setSelectedNode(null);
+        setSelectedNodes(selected);
+        setSelectedNode(null);
+      }
     }
 
     setDraggingNode(null);
@@ -252,7 +264,7 @@ export default function App() {
     setSelectionStart(null);
     setSelectionEnd(null);
     endPan();
-  }, [isSelecting, selectionStart, selectionEnd, nodes, setSelectedNodes, setSelectedNode, setDraggingNode, setIsSelecting, setIsDraggingSelection, setSelectionStart, setSelectionEnd, endPan]);
+  }, [isSelecting, selectionStart, selectionEnd, nodes, mode, canvasRef, setMode, setSelectedNodes, setSelectedNode, setDraggingNode, setIsSelecting, setIsDraggingSelection, setSelectionStart, setSelectionEnd, endPan]);
 
   useKeyboardShortcuts({
     edgeLabelDialog,

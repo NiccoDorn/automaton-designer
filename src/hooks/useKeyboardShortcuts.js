@@ -98,6 +98,12 @@ export function useKeyboardShortcuts({
                 setIsShortcutsModalOpen(prev => !prev);
             }
 
+            if (e.key === 't' || e.key === 'T') {
+                e.preventDefault();
+                setMode(mode === 'screenshot' ? 'select' : 'screenshot');
+                setEdgeStart(null);
+            }
+
             if (e.key === 'w' || e.key === 'W') {
                 e.preventDefault();
                 if (selectedNode !== null && selectedNode !== undefined) {

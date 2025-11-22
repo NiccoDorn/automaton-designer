@@ -107,6 +107,11 @@ export function useCanvasInteractions({
                 setSelectionStart({ x: adjustedCoords.x, y: adjustedCoords.y });
                 setSelectionEnd({ x: adjustedCoords.x, y: adjustedCoords.y });
             }
+        } else if (mode === 'screenshot') {
+            // Start screenshot selection (use raw canvas coords)
+            setIsSelecting(true);
+            setSelectionStart({ x: coords.x, y: coords.y });
+            setSelectionEnd({ x: coords.x, y: coords.y });
         }
     }, [canvasRef, nodes, offset, mode, selectedNodes, isPanning, startPan, setDraggingNode, setIsSelecting, setSelectionStart, setSelectionEnd, setIsDraggingSelection, setDragOffset, zoomLevel]);
 
@@ -116,10 +121,18 @@ export function useCanvasInteractions({
         const hovNode = findNode(nodes, adjustedCoords.x, adjustedCoords.y);
         setHoveredNode(hovNode ? hovNode.id : null);
 
-        if (isPanning) { updatePan(coords.x, coords.y);
-        } else if (isSelecting && selectionStart) { setSelectionEnd({ x: adjustedCoords.x, y: adjustedCoords.y }); }
+        if (isPanning) {
+            updatePan(coords.x, coords.y);
+        } else if (isSelecting && selectionStart) {
+            // Screenshot mode uses raw coords, select mode uses adjusted coords
+            if (mode === 'screenshot') {
+                setSelectionEnd({ x: coords.x, y: coords.y });
+            } else {
+                setSelectionEnd({ x: adjustedCoords.x, y: adjustedCoords.y });
+            }
+        }
 
-    }, [canvasRef, nodes, offset, isPanning, isSelecting, selectionStart, updatePan, setHoveredNode, setSelectionEnd, zoomLevel]);
+    }, [canvasRef, nodes, offset, isPanning, isSelecting, selectionStart, updatePan, setHoveredNode, setSelectionEnd, zoomLevel, mode]);
 
     const handleMouseUp = useCallback((nodes, selectionStart, selectionEnd, isSelecting, setSelectedNodes, setSelectedNode, setDraggingNode, setIsSelecting, setIsDraggingSelection, setSelectionStart, setSelectionEnd, endPan) => {
         if (isSelecting && selectionStart && selectionEnd) {
