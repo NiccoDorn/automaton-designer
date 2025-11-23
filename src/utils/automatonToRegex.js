@@ -208,25 +208,76 @@ export function convertAutomatonToRegex(nodes, edges) {
 function simplifyRegex(regex) {
     // Basic simplifications
     let result = regex;
+    let iterations = 0;
+    const maxIterations = 10;
 
-    // Remove redundant parentheses
-    while (result.includes('((') && result.includes('))')) {
+    // Iteratively apply simplifications until no more changes occur
+    while (iterations < maxIterations) {
         const old = result;
+        iterations++;
+
+        // Flatten nested alternations: (a|b)|c -> (a|b|c)
+        result = flattenAlternations(result);
+
+        // Remove redundant parentheses
         result = result.replace(/\(\(([^()]+)\)\)/g, '($1)');
+
+        // Simplify ε patterns
+        result = result.replace(/ε\*/g, 'ε');
+        result = result.replace(/\(ε\)\*/g, 'ε');
+        result = result.replace(/εε+/g, 'ε');
+
+        // Remove empty alternations
+        result = result.replace(/\|\)/g, ')');
+        result = result.replace(/\(\|/g, '(');
+
+        // Simplify single-element alternations
+        result = result.replace(/\(([^|()]+)\)/g, '$1');
+
+        // If no changes, we're done
         if (old === result) break;
     }
 
-    // Simplify ε patterns
-    result = result.replace(/ε\*/g, 'ε');
-    result = result.replace(/\(ε\)\*/g, 'ε');
-    result = result.replace(/εε+/g, 'ε');
+    return result;
+}
 
-    // Remove empty alternations
-    result = result.replace(/\|\)/g, ')');
-    result = result.replace(/\(\|/g, '(');
+// Flatten nested alternations: (a|b)|c -> (a|b|c), a|(b|c) -> (a|b|c)
+function flattenAlternations(regex) {
+    let result = regex;
+    let changed = true;
+    let iterations = 0;
+    const maxIterations = 10;
 
-    // Simplify single-element alternations
-    result = result.replace(/\(([^|()]+)\)/g, '$1');
+    while (changed && iterations < maxIterations) {
+        changed = false;
+        iterations++;
+
+        // Pattern: (expr1|expr2|...)|expr -> (expr1|expr2|...|expr)
+        // This handles cases like ((a|b)|c) or (a|b)|c
+        result = result.replace(/\(([^()]+)\)\|([^|()]+)/g, (match, group1, expr2) => {
+            if (group1.includes('|')) {
+                changed = true;
+                return `(${group1}|${expr2})`;
+            }
+            return match;
+        });
+
+        // Pattern: expr|(expr1|expr2|...) -> (expr|expr1|expr2|...)
+        // This handles cases like a|(b|c)
+        result = result.replace(/([^|()]+)\|\(([^()]+)\)/g, (match, expr1, group2) => {
+            if (group2.includes('|')) {
+                changed = true;
+                return `(${expr1}|${group2})`;
+            }
+            return match;
+        });
+
+        // Pattern: (expr1)|(expr2) where both are groups -> (expr1|expr2)
+        result = result.replace(/\(([^()]+)\)\|\(([^()]+)\)/g, (match, expr1, expr2) => {
+            changed = true;
+            return `(${expr1}|${expr2})`;
+        });
+    }
 
     return result;
 }
