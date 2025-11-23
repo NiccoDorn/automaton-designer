@@ -133,8 +133,8 @@ export function RegexInputModal({ isOpen, onClose, onSubmit, theme }) {
                                     <div>
                                         <div className="font-medium mb-1">Invalid regular expression:</div>
                                         <ul className="list-disc list-inside space-y-1">
-                                            {validation.errors.map((error, idx) => (
-                                                <li key={idx}>{error}</li>
+                                            {validation.errors.map((error) => (
+                                                <li key={error}>{error}</li>
                                             ))}
                                         </ul>
                                     </div>

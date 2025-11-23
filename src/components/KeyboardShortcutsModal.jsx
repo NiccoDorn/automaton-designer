@@ -96,8 +96,8 @@ export function KeyboardShortcutsModal({ theme, isOpen, onClose }) {
           style={{ maxHeight: 'calc(80vh - 80px)' }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {shortcutGroups.map((group, idx) => (
-              <div key={idx}>
+            {shortcutGroups.map((group) => (
+              <div key={group.title}>
                 <h3
                   className="text-sm font-semibold mb-3 uppercase tracking-wide"
                   style={{ color: theme.textSecondary || theme.text }}
@@ -105,9 +105,9 @@ export function KeyboardShortcutsModal({ theme, isOpen, onClose }) {
                   {group.title}
                 </h3>
                 <div className="space-y-2">
-                  {group.shortcuts.map((shortcut, sidx) => (
+                  {group.shortcuts.map((shortcut) => (
                     <div
-                      key={sidx}
+                      key={shortcut.key}
                       className="flex items-start gap-3"
                     >
                       <kbd

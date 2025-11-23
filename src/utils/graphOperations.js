@@ -65,7 +65,6 @@ export function exportCanvasAsSVG(canvas, nodes, edges, theme, filename = 'autom
 
         if (fromNode.id === toNode.id) {
             // Self-loop
-            const loopRadius = 30;
             svgContent += `    <path d="M ${fromNode.x},${fromNode.y - 25} Q ${fromNode.x},${fromNode.y - 80} ${fromNode.x + 40},${fromNode.y - 25}"
               stroke="${theme.nodeStroke}" fill="none" stroke-width="2"/>
     <text x="${fromNode.x}" y="${fromNode.y - 85}" fill="${theme.text}" font-size="14" text-anchor="middle">${edge.label}</text>

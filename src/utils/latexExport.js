@@ -14,7 +14,7 @@ export function generateLaTeXCode(nodes, edges) {
 `;
 
     // Add nodes
-    nodes.forEach((node, index) => {
+    nodes.forEach((node) => {
         const x = ((node.x - minX) * scale).toFixed(2);
         const y = (-(node.y - minY) * scale).toFixed(2); // Flip Y for LaTeX
 

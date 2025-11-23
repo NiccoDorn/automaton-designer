@@ -230,8 +230,8 @@ export function AnalysisSection({ nodes, edges, theme, isSimulating = false, onD
                                     {analysisResults.isNFA ? 'NFA Properties:' : 'Issues:'}
                                 </p>
                                 <ul className="text-xs mt-1 space-y-1" style={{ color: theme.nodeStroke }}>
-                                    {analysisResults.issues.map((issue, idx) => (
-                                        <li key={idx}>• {issue}</li>
+                                    {analysisResults.issues.map((issue) => (
+                                        <li key={issue}>• {issue}</li>
                                     ))}
                                 </ul>
                             </div>

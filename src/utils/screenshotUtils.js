@@ -4,7 +4,6 @@ export function captureCanvasRegion(canvas, region, filename = 'automaton-screen
     const height = maxY - minY;
 
     if (width <= 0 || height <= 0) {
-        console.log('Invalid screenshot region');
         return;
     }
 

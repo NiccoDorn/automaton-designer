@@ -1,8 +1,8 @@
 import { Shuffle, Minimize, GitMerge, FlipHorizontal } from 'lucide-react';
 
 export function ConstructionSection({
-    nodes,
-    edges,
+    nodes: _nodes,
+    edges: _edges,
     theme,
     isSimulating = false,
     onComplementDFA,

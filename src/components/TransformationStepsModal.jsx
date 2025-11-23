@@ -90,7 +90,7 @@ export function TransformationStepsModal({
                     <div className="space-y-2">
                         {step.partitions.map((partition, idx) => (
                             <div
-                                key={idx}
+                                key={partition.join(',')}
                                 className="px-3 py-2 rounded font-mono text-sm"
                                 style={{
                                     backgroundColor: theme.canvas,
@@ -312,9 +312,9 @@ export function TransformationStepsModal({
                         Transitions:
                     </h4>
                     <div className="space-y-1 max-h-48 overflow-y-auto">
-                        {step.transitions.map((trans, idx) => (
+                        {step.transitions.map((trans) => (
                             <div
-                                key={idx}
+                                key={`${trans.from}-${trans.to}-${trans.regex || trans.symbol}`}
                                 className="px-3 py-1 rounded font-mono text-xs"
                                 style={{
                                     backgroundColor: theme.canvas,

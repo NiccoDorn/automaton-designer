@@ -8,7 +8,7 @@ export function convertAutomatonToRegex(nodes, edges) {
 
     // Clone nodes and edges to avoid mutating original
     let states = nodes.map(n => ({ ...n }));
-    let transitions = new Map(); // (from, to) -> regex
+    const transitions = new Map(); // (from, to) -> regex
 
     // Build transition map
     edges.forEach(edge => {

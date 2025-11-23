@@ -36,7 +36,6 @@ export function useAutomatonOperations(nodes, edges, saveState, offset, canvasCo
             for (const newSymbol of newSymbols) {
                 if (existingSymbols.includes(newSymbol)) {
                     // Duplicate transition detected - ignore
-                    console.log(`Duplicate transition: ${newSymbol} from state ${from} to ${to} already exists`);
                     return;
                 }
             }
