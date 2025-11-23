@@ -144,7 +144,7 @@ export function Toolbar({
             }}
             title="Help (h)"
             >
-            <Keyboard size={18} />
+            <Keyboard size={18} /> Help [h]
             </button>
             <button
             onClick={onThemeToggle}
