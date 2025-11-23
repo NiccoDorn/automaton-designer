@@ -13,18 +13,6 @@ export function useAutomatonOperations(nodes, edges, saveState, offset, canvasCo
         return newNode.id;
     }, [nodes, edges, saveState, offset]);
 
-    /* // for now, no automated dead state dections
-    const runDeadStatesCheck = () => {
-        const result = detectDeadStates(nodes, edges);
-        setAnalysisResults({
-            type: 'dead',
-            ...result
-        });
-        if (onDeadStatesDetected) {
-            onDeadStatesDetected(result.dead);
-        }
-    };*/
-
     const addEdge = useCallback((from, to, label = 'ε', updateEdgeLabel) => {
         // Normalize the new label
         const newSymbols = label.split(',').map(s => s.trim()).filter(s => s.length > 0);
@@ -35,8 +23,6 @@ export function useAutomatonOperations(nodes, edges, saveState, offset, canvasCo
             const existingSymbols = edge.label.split(',').map(s => s.trim());
             for (const newSymbol of newSymbols) {
                 if (existingSymbols.includes(newSymbol)) {
-                    // Duplicate transition detected - ignore
-                    console.log(`Duplicate transition: ${newSymbol} from state ${from} to ${to} already exists`);
                     return;
                 }
             }

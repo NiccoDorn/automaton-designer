@@ -64,16 +64,14 @@ export function exportCanvasAsSVG(canvas, nodes, edges, theme, filename = 'autom
         if (!fromNode || !toNode) return;
 
         if (fromNode.id === toNode.id) {
-            // Self-loop
-            const loopRadius = 30;
             svgContent += `    <path d="M ${fromNode.x},${fromNode.y - 25} Q ${fromNode.x},${fromNode.y - 80} ${fromNode.x + 40},${fromNode.y - 25}"
-              stroke="${theme.nodeStroke}" fill="none" stroke-width="2"/>
+            stroke="${theme.nodeStroke}" fill="none" stroke-width="2"/>
     <text x="${fromNode.x}" y="${fromNode.y - 85}" fill="${theme.text}" font-size="14" text-anchor="middle">${edge.label}</text>
 `;
         } else {
             // Regular edge
             svgContent += `    <line x1="${fromNode.x}" y1="${fromNode.y}" x2="${toNode.x}" y2="${toNode.y}"
-              stroke="${theme.nodeStroke}" stroke-width="2"/>
+            stroke="${theme.nodeStroke}" stroke-width="2"/>
     <text x="${(fromNode.x + toNode.x) / 2}" y="${(fromNode.y + toNode.y) / 2 - 5}" fill="${theme.text}" font-size="14" text-anchor="middle">${edge.label}</text>
 `;
         }

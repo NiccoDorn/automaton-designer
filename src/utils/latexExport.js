@@ -6,15 +6,17 @@ export function generateLaTeXCode(nodes, edges) {
     const minX = Math.min(...nodes.map(n => n.x), 0);
     const minY = Math.min(...nodes.map(n => n.y), 0);
 
-    let latex = `\\begin{center}
-% \\usepackage{tikz}
+    let latex = `% \\usepackage{tikz}
 % \\usetikzlibrary{automata,positioning,arrows.meta}
+
+    \\begin{center}
+
 
 \\begin{tikzpicture}[->,>=Stealth,shorten >=1pt,auto,node distance=2.8cm,thick]
 `;
 
     // Add nodes
-    nodes.forEach((node, index) => {
+    nodes.forEach((node) => {
         const x = ((node.x - minX) * scale).toFixed(2);
         const y = (-(node.y - minY) * scale).toFixed(2); // Flip Y for LaTeX
 

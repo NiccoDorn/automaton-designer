@@ -42,7 +42,7 @@ export function minimizeDFA(nodes, edges) {
     });
 
     // Check for non-determinism
-    for (const [stateId, transitions] of transitionTable) {
+    for (const [transitions] of transitionTable) {
         const seenSymbols = new Set();
         for (const symbol of transitions.keys()) {
             if (seenSymbols.has(symbol)) {
