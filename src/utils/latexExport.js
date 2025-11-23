@@ -6,15 +6,14 @@ export function generateLaTeXCode(nodes, edges) {
     const minX = Math.min(...nodes.map(n => n.x), 0);
     const minY = Math.min(...nodes.map(n => n.y), 0);
 
-    let latex = `% \\usepackage{tikz}
-% \\usetikzlibrary{automata,positioning,arrows.meta}
+    let latex = `\\usepackage{tikz}
+\\usetikzlibrary{automata,positioning,arrows.meta}
 
-    \\begin{center}
-
-
+\\begin{document}
+\\begin{center}
 \\begin{tikzpicture}[->,>=Stealth,shorten >=1pt,auto,node distance=2.8cm,thick]
 `;
-
+    latex += `\n`;
     // Add nodes
     nodes.forEach((node) => {
         const x = ((node.x - minX) * scale).toFixed(2);
@@ -46,9 +45,10 @@ export function generateLaTeXCode(nodes, edges) {
             latex += `\\path (${edge.from}) edge${bendOption} node {${edge.label}} (${edge.to});\n`;
         }
     });
-
+    latex += `\n`;
     latex += `\\end{tikzpicture}
 \\end{center}
+\\end{document}
 `;
 
     return latex;

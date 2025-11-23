@@ -120,7 +120,7 @@ export function Toolbar({
             onClick={onClearCanvas}
             disabled={isSimulating}
             className="px-4 py-2 rounded-lg text-white font-medium shadow-md transition duration-150 ease-in-out flex items-center gap-2"
-            style={{ 
+            style={{
                 backgroundColor: '#ef4444',
                 opacity: isSimulating ? 0.5 : 1,
                 cursor: isSimulating ? 'not-allowed' : 'pointer'
@@ -142,7 +142,7 @@ export function Toolbar({
                 opacity: isSimulating ? 0.5 : 1,
                 cursor: isSimulating ? 'not-allowed' : 'pointer'
             }}
-            title="Keyboard Shortcuts (H)"
+            title="Help (h)"
             >
             <Keyboard size={18} />
             </button>
@@ -173,12 +173,12 @@ export function Toolbar({
             style={{ backgroundColor: '#a855f7' }}
             >
             <Upload size={18} /> Import
-            <input 
-                type="file" 
-                accept=".json" 
-                onChange={onImport} 
+            <input
+                type="file"
+                accept=".json"
+                onChange={onImport}
                 disabled={isSimulating}
-                className="hidden" 
+                className="hidden"
             />
             </label>
         </div>

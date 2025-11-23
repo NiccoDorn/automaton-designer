@@ -8,7 +8,8 @@ export function KeyboardShortcutsModal({ theme, isOpen, onClose }) {
       title: 'Navigation',
       shortcuts: [
         { key: '←↑→↓', description: 'Pan canvas' },
-        { key: '↹ Tab', description: 'Cycle through nodes' },
+        { key: 'Ctrl + Click', description: 'Pan canvas' },
+        { key: '↹ / Tab', description: 'Cycle through nodes in select mode' },
         { key: 'I', description: 'Select connected nodes' },
       ]
     },
@@ -29,8 +30,8 @@ export function KeyboardShortcutsModal({ theme, isOpen, onClose }) {
       shortcuts: [
         { key: 'T', description: 'Screenshot mode' },
         { key: 'H', description: 'Show keyboard shortcuts' },
-        { key: 'Ctrl + +', description: 'Zoom in' },
-        { key: 'Ctrl + -', description: 'Zoom out' },
+        { key: 'Ctrl +', description: 'Zoom in' },
+        { key: 'Ctrl -', description: 'Zoom out' },
         { key: 'Ctrl + Wheel', description: 'Zoom in/out' },
         { key: 'Shift + Click', description: 'Multi-select states' },
       ]
@@ -38,8 +39,8 @@ export function KeyboardShortcutsModal({ theme, isOpen, onClose }) {
     {
       title: 'History',
       shortcuts: [
-        { key: 'Ctrl + Z', description: 'Undo' },
-        { key: 'Ctrl + Y', description: 'Redo' },
+        { key: 'Ctrl + Z', description: 'Undo last action' },
+        { key: 'Ctrl + Y', description: 'Redo (Undo the Undo)' },
       ]
     },
     {
@@ -47,6 +48,7 @@ export function KeyboardShortcutsModal({ theme, isOpen, onClose }) {
       shortcuts: [
         { key: 'Ctrl + X', description: 'Cancel dialog window' },
         { key: 'Esc', description: 'Close dialog / Stop simulation' },
+        { key: 'Enter', description: 'Accept dialog with current input' },
       ]
     }
   ];
