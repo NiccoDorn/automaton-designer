@@ -72,7 +72,7 @@ export function useCanvasInteractions({
                 setSelectedNodes(new Set());
             }
         }
-    }, [isPanning, isSelecting, canvasRef, nodes, offset, mode, edgeStart, addNode, openEdgeLabelDialog, setEdgeStart, setSelectedNode, setSelectedNodes, zoomLevel]);
+    }, [isPanning, isSelecting, canvasRef, nodes, offset, mode, edgeStart, addNode, openEdgeLabelDialog, setEdgeStart, setSelectedNode, setSelectedNodes, selectedNodes, zoomLevel]);
 
     const handleCanvasRightClick = useCallback((e) => {
         e.preventDefault();

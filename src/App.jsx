@@ -452,8 +452,7 @@ export default function App() {
       setSelectedNode(null);
       setSelectedNodes(new Set());
 
-      // Show success message
-      console.log('Transformation applied successfully!');
+      // Transformation applied successfully
     }
   }, [saveState, setSelectedNode, setSelectedNodes]);
 
