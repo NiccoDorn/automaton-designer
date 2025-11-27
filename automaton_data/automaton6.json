@@ -1,0 +1,210 @@
+{
+    "nodes": [
+        {
+        "id": 0,
+        "x": 108,
+        "y": 447.1166687011719,
+        "label": "q′",
+        "isAccepting": true,
+        "isStart": false
+        },
+        {
+        "id": 1,
+        "x": 103,
+        "y": 221.11666870117188,
+        "label": "q₀",
+        "isAccepting": false,
+        "isStart": true
+        },
+        {
+        "id": 2,
+        "x": 273,
+        "y": 93.11666870117188,
+        "label": "q₁",
+        "isAccepting": false,
+        "isStart": false
+        },
+        {
+        "id": 3,
+        "x": 403,
+        "y": 221.11666870117188,
+        "label": "q₂",
+        "isAccepting": false,
+        "isStart": false
+        },
+        {
+        "id": 4,
+        "x": 550,
+        "y": 100,
+        "label": "q₃",
+        "isAccepting": false,
+        "isStart": false
+        },
+        {
+        "id": 5,
+        "x": 696,
+        "y": 101.11666870117188,
+        "label": "q₃ᵃ",
+        "isAccepting": false,
+        "isStart": false
+        },
+        {
+        "id": 6,
+        "x": 850,
+        "y": 100,
+        "label": "q₃ᵇ",
+        "isAccepting": false,
+        "isStart": false
+        },
+        {
+        "id": 7,
+        "x": 1000,
+        "y": 200,
+        "label": "q₄",
+        "isAccepting": false,
+        "isStart": false
+        },
+        {
+        "id": 8,
+        "x": 545,
+        "y": 450.1166687011719,
+        "label": "q₅ᵇ",
+        "isAccepting": false,
+        "isStart": false
+        },
+        {
+        "id": 9,
+        "x": 1000,
+        "y": 350,
+        "label": "q₅",
+        "isAccepting": false,
+        "isStart": false
+        },
+        {
+        "id": 10,
+        "x": 850,
+        "y": 450,
+        "label": "q₅ᵃ",
+        "isAccepting": false,
+        "isStart": false
+        },
+        {
+        "id": 11,
+        "x": 319,
+        "y": 449.1166687011719,
+        "label": "q₆",
+        "isAccepting": false,
+        "isStart": false
+        }
+    ],
+    "edges": [
+        {
+        "id": 0,
+        "from": 1,
+        "to": 1,
+        "label": "{a,b,d},R"
+        },
+        {
+        "id": 1,
+        "from": 1,
+        "to": 2,
+        "label": "c→c,R"
+        },
+        {
+        "id": 2,
+        "from": 2,
+        "to": 1,
+        "label": "{a,b,d},R"
+        },
+        {
+        "id": 3,
+        "from": 2,
+        "to": 3,
+        "label": "c→c,R"
+        },
+        {
+        "id": 4,
+        "from": 3,
+        "to": 1,
+        "label": "{a,b},R"
+        },
+        {
+        "id": 5,
+        "from": 3,
+        "to": 4,
+        "label": "d→d,L"
+        },
+        {
+        "id": 6,
+        "from": 4,
+        "to": 5,
+        "label": "c→c,L"
+        },
+        {
+        "id": 7,
+        "from": 5,
+        "to": 6,
+        "label": "c→a,R"
+        },
+        {
+        "id": 8,
+        "from": 6,
+        "to": 7,
+        "label": "c→b,R"
+        },
+        {
+        "id": 9,
+        "from": 7,
+        "to": 7,
+        "label": "{a,b,c,d},R"
+        },
+        {
+        "id": 10,
+        "from": 7,
+        "to": 9,
+        "label": "d→$,R"
+        },
+        {
+        "id": 11,
+        "from": 9,
+        "to": 9,
+        "label": "{a,b,c,d},R"
+        },
+        {
+        "id": 12,
+        "from": 9,
+        "to": 10,
+        "label": "#→#,L"
+        },
+        {
+        "id": 13,
+        "from": 10,
+        "to": 8,
+        "label": "{a,b,c,d},L"
+        },
+        {
+        "id": 14,
+        "from": 10,
+        "to": 11,
+        "label": "$→$,L"
+        },
+        {
+        "id": 15,
+        "from": 8,
+        "to": 10,
+        "label": "{a,b,c,d}→X,R"
+        },
+        {
+        "id": 16,
+        "from": 11,
+        "to": 11,
+        "label": "{a,b,c,d},L"
+        },
+        {
+        "id": 17,
+        "from": 11,
+        "to": 0,
+        "label": "#→#,R"
+        }
+    ]
+}
